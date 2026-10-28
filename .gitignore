@@ -25,3 +25,28 @@ _ide_helper.php
 Homestead.json
 Homestead.yaml
 Thumbs.db
+
+# Extra editors / IDE
+/.fleet
+/.claude/settings.local.json
+.phpstorm.meta.php
+*.swp
+*.swo
+*~
+
+# OS files
+Desktop.ini
+ehthumbs.db
+$RECYCLE.BIN/
+
+# Tooling caches & reports
+.php-cs-fixer.cache
+.php_cs.cache
+/coverage
+/.phpstan
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# AI agent instructions
+/CLAUDE.md

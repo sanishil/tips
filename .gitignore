@@ -50,3 +50,6 @@ pnpm-debug.log*
 
 # AI agent instructions
 /CLAUDE.md
+
+# Tests (kept local only)
+/tests/

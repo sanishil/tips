@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\DepartmentController;
 use App\Http\Controllers\Portal\DesignationController;
 use App\Http\Controllers\Portal\TeacherController;
@@ -66,6 +67,12 @@ foreach (['admin', 'tech'] as $portal) {
             Route::post('/designations', [DesignationController::class, 'store'])->name('designations.store');
             Route::put('/designations/{designation}', [DesignationController::class, 'update'])->name('designations.update');
             Route::delete('/designations/{designation}', [DesignationController::class, 'destroy'])->name('designations.destroy');
+        });
+        Route::get('/courses', [CourseController::class, 'index'])->name('courses');
+        Route::middleware('throttle:30,1')->group(function () {
+            Route::post('/courses', [CourseController::class, 'store'])->name('courses.store');
+            Route::put('/courses/{course}', [CourseController::class, 'update'])->name('courses.update');
+            Route::delete('/courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
         });
         Route::get('/teachers', [TeacherController::class, 'index'])->name('teachers');
         Route::middleware('throttle:30,1')->group(function () {

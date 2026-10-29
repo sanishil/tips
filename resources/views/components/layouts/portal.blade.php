@@ -6,6 +6,7 @@
         ['route' => 'students', 'label' => 'Students', 'icon' => 'fa-user-graduate'],
         ['route' => 'departments', 'label' => 'Departments', 'icon' => 'fa-building-columns'],
         ['route' => 'designations', 'label' => 'Designations', 'icon' => 'fa-id-badge'],
+        ['route' => 'courses', 'label' => 'Courses', 'icon' => 'fa-graduation-cap'],
         ['route' => 'subjects', 'label' => 'Subjects', 'icon' => 'fa-book'],
         ['route' => 'teachers', 'label' => 'Teachers', 'icon' => 'fa-chalkboard-user'],
     ];

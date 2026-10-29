@@ -4,7 +4,7 @@
     <div class="d-inline-flex gap-1">
         {{ $slot }}
         @if ($edit)
-            <button type="button" class="btn btn-sm btn-icon" data-bs-toggle="modal" data-bs-target="#{{ $edit }}" data-record="{{ json_encode($record) }}" aria-label="Edit {{ $label }}" title="Edit">
+            <button type="button" class="btn btn-sm btn-icon btn-icon-warning" data-bs-toggle="modal" data-bs-target="#{{ $edit }}" data-record="{{ json_encode($record) }}" aria-label="Edit {{ $label }}" title="Edit">
                 <i class="fa-solid fa-pen" aria-hidden="true"></i>
             </button>
         @endif

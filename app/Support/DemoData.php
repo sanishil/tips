@@ -104,18 +104,6 @@ class DemoData
     }
 
     /**
-     * The signed-in user for each portal.
-     *
-     * @return array{name: string, email: string, type: string, initials: string}
-     */
-    public static function currentUser(string $portal): array
-    {
-        return $portal === 'admin'
-            ? ['name' => 'Sani Shil', 'email' => 'sani.shil@example.com', 'type' => 'Admin', 'initials' => 'SS']
-            : ['name' => 'Riya Debnath', 'email' => 'riya.debnath@example.com', 'type' => 'Student', 'initials' => 'RD'];
-    }
-
-    /**
      * @return list<array{name: string, email: string, type: string, active: bool, online: bool, last_activity: string}>
      */
     public static function users(): array

@@ -1,6 +1,6 @@
 <x-layouts.portal :portal="$portal" title="Teachers">
     <x-page-header title="Teachers" subtitle="Students pick from this list under “Submitted to”.">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-teacher">Add teacher</button>
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-teacher"><i class="fa-solid fa-user-plus me-1" aria-hidden="true"></i> Add teacher</button>
     </x-page-header>
 
     <x-table-card id="teachers-table" title="All teachers" :count="count($teachers)" placeholder="Search teachers">
@@ -33,7 +33,7 @@
     </x-table-card>
 
     @foreach (['add' => 'Add teacher', 'edit' => 'Edit teacher'] as $mode => $heading)
-        <x-modal :id="$mode.'-teacher'" :title="$heading" :submit="$mode === 'add' ? 'Add teacher' : 'Save changes'" :message="$mode === 'add' ? 'Teacher added.' : 'Changes saved.'">
+        <x-modal :id="$mode.'-teacher'" :icon="$mode === 'add' ? 'fa-plus' : 'fa-floppy-disk'" :title="$heading" :submit="$mode === 'add' ? 'Add teacher' : 'Save changes'" :message="$mode === 'add' ? 'Teacher added.' : 'Changes saved.'">
             <div>
                 <label class="form-label" for="{{ $mode }}_teacher">Full name</label>
                 <input id="{{ $mode }}_teacher" name="teacher" class="form-control" required maxlength="100">
@@ -60,7 +60,7 @@
         </x-modal>
     @endforeach
 
-    <x-modal id="delete-teacher" title="Remove this teacher?" submit="Remove" busy="Removing…" danger message="Teacher removed.">
+    <x-modal id="delete-teacher" icon="fa-user-minus" title="Remove this teacher?" submit="Remove" busy="Removing…" danger message="Teacher removed.">
         <p class="mb-0"><strong data-record-text="teacher"></strong> will no longer appear in the student form. Cover pages already printed aren't affected.</p>
     </x-modal>
 </x-layouts.portal>

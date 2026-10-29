@@ -1,6 +1,6 @@
 <x-layouts.portal :portal="$portal" title="Departments">
     <x-page-header title="Departments" subtitle="Subjects, teachers and students all belong to a department.">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-department">Add department</button>
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-department"><i class="fa-solid fa-plus me-1" aria-hidden="true"></i> Add department</button>
     </x-page-header>
 
     <x-table-card id="departments-table" title="All departments" :count="count($departments)" placeholder="Search departments">
@@ -26,7 +26,7 @@
     </x-table-card>
 
     @foreach (['add' => 'Add department', 'edit' => 'Edit department'] as $mode => $heading)
-        <x-modal :id="$mode.'-department'" :title="$heading" :submit="$mode === 'add' ? 'Add department' : 'Save changes'" :message="$mode === 'add' ? 'Department added.' : 'Changes saved.'">
+        <x-modal :id="$mode.'-department'" :icon="$mode === 'add' ? 'fa-plus' : 'fa-floppy-disk'" :title="$heading" :submit="$mode === 'add' ? 'Add department' : 'Save changes'" :message="$mode === 'add' ? 'Department added.' : 'Changes saved.'">
             <div>
                 <label class="form-label" for="{{ $mode }}_dept_name">Name</label>
                 <input id="{{ $mode }}_dept_name" name="dept_name" class="form-control" required maxlength="100">

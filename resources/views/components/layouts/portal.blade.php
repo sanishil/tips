@@ -20,8 +20,8 @@
         ];
     }
 
-    $user = \App\Support\DemoData::currentUser($portal);
-    $portalName = $portal === 'admin' ? 'Admin' : 'Student portal';
+    $user = auth()->user();
+    $portalName = $portal === 'admin' ? 'Admin' : 'Tech portal';
 @endphp
 
 <x-layouts.app :title="$title.' · '.$portalName" class="portal d-flex flex-column min-vh-100">
@@ -67,15 +67,18 @@
 
             <div class="border-top p-2">
                 <a href="{{ route($portal.'.profile') }}" @class(['nav-link', 'active' => request()->routeIs($portal.'.profile')])>
-                    <span class="avatar">{{ $user['initials'] }}</span>
+                    <span class="avatar">{{ $user->initials }}</span>
                     <span class="lh-sm text-truncate">
-                        <span class="d-block text-truncate">{{ $user['name'] }}</span>
+                        <span class="d-block text-truncate">{{ $user->name }}</span>
                         <span class="d-block small text-body-secondary">My profile</span>
                     </span>
                 </a>
-                <a href="{{ route('login', ['signed_out' => 1]) }}" class="nav-link">
-                    <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>Sign out
-                </a>
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="nav-link w-100 text-start">
+                        <i class="fa-solid fa-arrow-right-from-bracket" aria-hidden="true"></i>Sign out
+                    </button>
+                </form>
                 <p class="small text-body-secondary px-2 pt-2 mb-1">You'll be signed out after 10 minutes without activity.</p>
             </div>
         </div>

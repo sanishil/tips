@@ -1,7 +1,7 @@
 <x-layouts.portal :portal="$portal" title="Students">
     <x-page-header title="Students" subtitle="A record is created the first time a student prints a cover page.">
         @if ($students)
-            <button type="button" class="btn btn-outline-secondary" data-export-table="students-table" data-export-name="students">
+            <button type="button" class="btn btn-info" data-export-table="students-table" data-export-name="students">
                 <i class="fa-solid fa-file-csv me-1" aria-hidden="true"></i> Export CSV
             </button>
         @endif

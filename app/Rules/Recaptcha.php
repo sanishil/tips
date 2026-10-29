@@ -30,7 +30,7 @@ class Recaptcha implements ValidationRule
     public function validate(string $attribute, mixed $value, Closure $fail): void
     {
         if (! is_string($value) || $value === '') {
-            $fail('Tick "I\'m not a robot" so we know you\'re not a bot.');
+            $fail('Please tick the box first.');
 
             return;
         }
@@ -41,14 +41,16 @@ class Recaptcha implements ValidationRule
                 'response' => $value,
                 'remoteip' => $this->ipAddress,
             ]));
-        } catch (ConnectionException) {
+        } catch (ConnectionException $exception) {
+            report($exception);
+
             $fail('We couldn\'t check the "I\'m not a robot" box. Please try again.');
 
             return;
         }
 
         if ($response->json('success') !== true) {
-            $fail('The "I\'m not a robot" check failed or expired. Please tick it again.');
+            $fail('That check timed out. Please tick the box again.');
         }
     }
 }

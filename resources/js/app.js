@@ -123,7 +123,7 @@ if (intro) {
 
 document.addEventListener('click', (event) => {
     const target = event.target.closest(
-        '[data-intro-replay], [data-theme-toggle], [data-step-go], [data-password-toggle], [data-recaptcha-reset], [data-resend], [data-export-table], [data-table-clear]',
+        '[data-intro-replay], [data-theme-toggle], [data-password-toggle], [data-recaptcha-reset], [data-export-table], [data-table-clear]',
     );
 
     if (!target) {
@@ -141,10 +141,6 @@ document.addEventListener('click', (event) => {
         applyTheme(document.documentElement.getAttribute('data-bs-theme') === 'dark' ? 'light' : 'dark');
     }
 
-    if (target.matches('[data-step-go]')) {
-        goToStep(target);
-    }
-
     if (target.matches('[data-password-toggle]')) {
         const input = document.getElementById(target.dataset.passwordToggle);
         const reveal = input.type === 'password';
@@ -156,11 +152,6 @@ document.addEventListener('click', (event) => {
 
     if (target.matches('[data-recaptcha-reset]')) {
         window.grecaptcha?.reset();
-    }
-
-    if (target.matches('[data-resend]')) {
-        toast('We sent you a new code.');
-        startResendTimer(target);
     }
 
     if (target.matches('[data-export-table]')) {
@@ -176,63 +167,10 @@ document.addEventListener('click', (event) => {
     }
 });
 
-/* Forgot-password steps ---------------------------------------------------- */
+/* Email codes: "Resend code" counts down until the server allows another one. */
 
-function fieldsAreValid(container) {
-    const fields = [...container.querySelectorAll('input, select, textarea')];
-    const firstInvalid = fields.find((field) => !field.checkValidity());
-
-    container.classList.toggle('was-validated', Boolean(firstInvalid));
-    firstInvalid?.focus();
-
-    return !firstInvalid;
-}
-
-function goToStep(trigger) {
-    const container = trigger.closest('[data-steps]');
-    const current = trigger.closest('[data-step]');
-    const next = trigger.dataset.stepGo;
-
-    if (Number(next) > Number(current.dataset.step) && !fieldsAreValid(current)) {
-        return;
-    }
-
-    container.querySelectorAll('[data-step]').forEach((panel) => {
-        panel.hidden = panel.dataset.step !== next;
-    });
-    container.querySelectorAll('[data-step-indicator]').forEach((bar) => {
-        bar.dataset.active = String(Number(bar.dataset.stepIndicator) <= Number(next));
-    });
-
-    const panel = container.querySelector(`[data-step="${next}"]`);
-
-    if (next === '2' && current.dataset.step === '1') {
-        const email = document.getElementById('reset_email').value;
-        panel.querySelector('[data-masked-email]').textContent = maskEmail(email);
-        startResendTimer(panel.querySelector('[data-resend]'));
-    }
-
-    panel.querySelector('input')?.focus();
-}
-
-/* Steps 1 and 2 aren't forms, so make Enter press the step's main button. */
-document.addEventListener('keydown', (event) => {
-    if (event.key !== 'Enter' || !event.target.matches('[data-steps] input') || event.target.form) {
-        return;
-    }
-
-    event.preventDefault();
-    event.target.closest('[data-step]').querySelector('.btn-primary[data-step-go]')?.click();
-});
-
-function maskEmail(email) {
-    const [user, domain] = email.split('@');
-
-    return `${user[0]}${'•'.repeat(Math.max(user.length - 1, 3))}@${domain}`;
-}
-
-function startResendTimer(button) {
-    let seconds = 60;
+function startResendTimer(button, seconds) {
+    const label = button.querySelector('[data-resend-label]') ?? button;
     button.disabled = true;
     clearInterval(button.timer);
 
@@ -240,16 +178,29 @@ function startResendTimer(button) {
         if (seconds <= 0) {
             clearInterval(button.timer);
             button.disabled = false;
-            button.textContent = 'Resend code';
+            label.textContent = 'Resend code';
             return;
         }
-        button.textContent = `Resend code in 0:${String(seconds).padStart(2, '0')}`;
+        label.textContent = `Resend code in 0:${String(seconds).padStart(2, '0')}`;
         seconds--;
     };
 
     tick();
     button.timer = setInterval(tick, 1000);
 }
+
+document.querySelectorAll('[data-resend-in]').forEach((button) => {
+    const seconds = Number(button.dataset.resendIn);
+
+    if (seconds > 0) {
+        startResendTimer(button, seconds);
+    }
+});
+
+/* A field the server marked wrong stops looking wrong once it's edited. */
+document.addEventListener('input', (event) => {
+    event.target.classList?.remove('is-invalid');
+});
 
 /* Live cover-page preview -------------------------------------------------- */
 
@@ -483,6 +434,8 @@ document.addEventListener('show.bs.modal', (event) => {
     }
 });
 
+document.querySelectorAll('.modal[data-show-on-load]').forEach((modal) => bootstrap.Modal.getOrCreateInstance(modal).show());
+
 document.addEventListener('shown.bs.modal', (event) => {
     const modal = event.target;
     const field = modal.querySelector('.modal-body :is(input:not([type=hidden]):not([type=radio]):not(:disabled), select, textarea)');
@@ -530,8 +483,12 @@ document.addEventListener('submit', (event) => {
         return;
     }
 
-    /* Design-only build: these forms have no backend yet. */
+    /* Real forms: show the button's busy label while the server works (sending email can take a few seconds). */
     if (!form.matches('[data-demo-form]')) {
+        if (event.submitter?.dataset.busy) {
+            setBusy(event.submitter, true);
+        }
+
         return;
     }
 

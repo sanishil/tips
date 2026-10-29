@@ -1,8 +1,15 @@
-@props(['id', 'title', 'size' => null, 'submit' => 'Save', 'busy' => 'Saving…', 'message' => null, 'danger' => false])
+@props(['id', 'title', 'size' => null, 'submit' => 'Save', 'busy' => 'Saving…', 'message' => null, 'variant' => 'success', 'icon' => null, 'danger' => false, 'action' => null, 'showOnLoad' => false])
 
-<div class="modal fade" id="{{ $id }}" tabindex="-1" aria-labelledby="{{ $id }}-title" aria-hidden="true">
+{{--
+| With an action the form posts to the server; without one it's a design-only demo form. showOnLoad reopens it after a failed submit.
+| Submit colour follows the action: success (add, save, send), warning (resets), danger (delete, deactivate); `danger` is short for variant="danger".
+| `icon` is a Font Awesome name; without one the colour picks it (check, key, trash can).
+--}}
+@php($variant = $danger ? 'danger' : $variant)
+@php($icon ??= ['success' => 'fa-check', 'warning' => 'fa-key', 'danger' => 'fa-trash-can'][$variant] ?? 'fa-check')
+<div class="modal fade" id="{{ $id }}" tabindex="-1" aria-labelledby="{{ $id }}-title" aria-hidden="true" @if ($showOnLoad) data-show-on-load @endif>
     <div @class(['modal-dialog modal-dialog-centered', $size])>
-        <form method="POST" class="modal-content" data-demo-form="{{ $message }}" novalidate>
+        <form method="POST" class="modal-content" @if ($action) action="{{ $action }}" @else data-demo-form="{{ $message }}" @endif novalidate>
             @csrf
             <div class="modal-header">
                 <h2 class="modal-title h5 font-display" id="{{ $id }}-title">{{ $title }}</h2>
@@ -12,8 +19,8 @@
                 {{ $slot }}
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
-                <button type="submit" data-busy="{{ $busy }}" @class(['btn', 'btn-danger' => $danger, 'btn-primary' => ! $danger])>{{ $submit }}</button>
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-xmark me-1" aria-hidden="true"></i> Cancel</button>
+                <button type="submit" data-busy="{{ $busy }}" class="btn btn-{{ $variant }}"><i class="fa-solid {{ $icon }} me-1" aria-hidden="true"></i> {{ $submit }}</button>
             </div>
         </form>
     </div>

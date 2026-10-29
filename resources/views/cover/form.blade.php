@@ -2,9 +2,23 @@
     <x-intro-loader />
 
     <x-site-header>
-        <a href="{{ route('login') }}" class="btn btn-sm btn-primary flex-shrink-0">
-            <i class="fa-solid fa-right-to-bracket me-1" aria-hidden="true"></i> Login
-        </a>
+        @auth
+            <div class="d-flex align-items-center gap-2 flex-shrink-0">
+                @if (auth()->user()->role !== \App\Enums\UserRole::Student)
+                    <a href="{{ route(auth()->user()->role->dashboardRoute()) }}" class="btn btn-sm btn-outline-primary"><i class="fa-solid fa-gauge me-1" aria-hidden="true"></i> Open portal</a>
+                @endif
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-sm btn-outline-secondary">
+                        <i class="fa-solid fa-arrow-right-from-bracket me-1" aria-hidden="true"></i> Sign out
+                    </button>
+                </form>
+            </div>
+        @else
+            <a href="{{ route('login') }}" class="btn btn-sm btn-primary flex-shrink-0">
+                <i class="fa-solid fa-right-to-bracket me-1" aria-hidden="true"></i> Login
+            </a>
+        @endauth
     </x-site-header>
 
     <main id="main" class="container-xl py-4 py-lg-5 flex-grow-1">
@@ -169,7 +183,7 @@
                     </section>
 
                     <div class="form-actions">
-                        <button type="reset" class="btn btn-danger">Clear</button>
+                        <button type="reset" class="btn btn-danger"><i class="fa-solid fa-eraser me-1" aria-hidden="true"></i> Clear</button>
                         <button type="submit" class="btn btn-success">
                             <i class="fa-solid fa-print me-1" aria-hidden="true"></i> Print cover page
                         </button>

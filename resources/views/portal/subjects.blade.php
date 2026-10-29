@@ -1,6 +1,6 @@
 <x-layouts.portal :portal="$portal" title="Subjects">
     <x-page-header title="Subjects" subtitle="Students only see the subjects for their own department, course and semester.">
-        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#add-subject">Add subject</button>
+        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-subject"><i class="fa-solid fa-plus me-1" aria-hidden="true"></i> Add subject</button>
     </x-page-header>
 
     <x-table-card id="subjects-table" title="All subjects" :count="count($subjects)" placeholder="Search name or code">
@@ -41,7 +41,7 @@
     </x-table-card>
 
     @foreach (['add' => 'Add subject', 'edit' => 'Edit subject'] as $mode => $heading)
-        <x-modal :id="$mode.'-subject'" size="modal-lg" :title="$heading" :submit="$mode === 'add' ? 'Add subject' : 'Save changes'" :message="$mode === 'add' ? 'Subject added.' : 'Changes saved.'">
+        <x-modal :id="$mode.'-subject'" :icon="$mode === 'add' ? 'fa-plus' : 'fa-floppy-disk'" size="modal-lg" :title="$heading" :submit="$mode === 'add' ? 'Add subject' : 'Save changes'" :message="$mode === 'add' ? 'Subject added.' : 'Changes saved.'">
             <div class="row g-3">
                 <div class="col-sm-8">
                     <label class="form-label" for="{{ $mode }}_subjects">Subject name</label>

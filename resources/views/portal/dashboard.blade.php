@@ -68,7 +68,7 @@
                 <div class="card-header py-3 d-flex justify-content-between align-items-center">
                     <h2 id="prints-heading" class="h6 mb-0">Printed today</h2>
                     @if (count($todayPrints) > 4)
-                        <button type="button" class="btn btn-link btn-sm p-0" data-bs-toggle="modal" data-bs-target="#today-prints">See all {{ count($todayPrints) }}</button>
+                        <button type="button" class="btn btn-link btn-sm p-0" data-bs-toggle="modal" data-bs-target="#today-prints"><i class="fa-solid fa-list me-1" aria-hidden="true"></i> See all {{ count($todayPrints) }}</button>
                     @endif
                 </div>
                 @if ($todayPrints)

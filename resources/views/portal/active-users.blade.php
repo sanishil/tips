@@ -16,7 +16,7 @@
                             <span class="d-block small text-body-secondary text-truncate">{{ $user['type'] }} · active {{ $user['last_activity'] }}</span>
                         </span>
                         <button type="button" class="btn btn-sm btn-outline-danger flex-shrink-0" data-bs-toggle="modal" data-bs-target="#force-logout" data-record="{{ json_encode(['name' => $user['name']]) }}">
-                            Sign out
+                            <i class="fa-solid fa-arrow-right-from-bracket me-1" aria-hidden="true"></i> Sign out
                         </button>
                     </li>
                 @endforeach
@@ -30,7 +30,7 @@
         </div>
     @endif
 
-    <x-modal id="force-logout" title="Sign this person out?" submit="Sign out" busy="Signing out…" danger message="Signed out.">
+    <x-modal id="force-logout" icon="fa-arrow-right-from-bracket" title="Sign this person out?" submit="Sign out" busy="Signing out…" danger message="Signed out.">
         <p class="mb-0"><strong data-record-text="name"></strong> will be signed out straight away. Anything they haven't saved will be lost.</p>
     </x-modal>
 </x-layouts.portal>

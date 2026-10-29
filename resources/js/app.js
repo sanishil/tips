@@ -154,6 +154,11 @@ document.addEventListener('click', (event) => {
         return;
     }
 
+    /* The second click of a double click would undo a toggle or download twice; act once. */
+    if (event.detail > 1) {
+        return;
+    }
+
     /* On the cover page the logo replays the intro instead of reloading the form. */
     if (target.matches('[data-intro-replay]') && intro) {
         event.preventDefault();
@@ -473,6 +478,21 @@ document.addEventListener('show.bs.modal', (event) => {
 
 document.querySelectorAll('.modal[data-show-on-load]').forEach((modal) => bootstrap.Modal.getOrCreateInstance(modal).show());
 
+/* Coming back with the browser's Back button can restore a page mid-submit; unlock its forms. */
+window.addEventListener('pageshow', (event) => {
+    if (!event.persisted) {
+        return;
+    }
+
+    document.querySelectorAll('form[data-submitting]').forEach((form) => {
+        delete form.dataset.submitting;
+        form.querySelectorAll('[aria-busy="true"]').forEach((button) => setBusy(button, false));
+        form.querySelectorAll('[type=submit]:disabled').forEach((button) => {
+            button.disabled = false;
+        });
+    });
+});
+
 document.addEventListener('shown.bs.modal', (event) => {
     const modal = event.target;
     const field = modal.querySelector('.modal-body :is(input:not([type=hidden]):not([type=radio]):not(:disabled), select, textarea)');
@@ -502,6 +522,12 @@ function setBusy(button, busy) {
 document.addEventListener('submit', (event) => {
     const form = event.target;
 
+    /* A double click (or a second Enter) must not send the form twice: the second request would reuse a spent token or create a duplicate. */
+    if (form.dataset.submitting) {
+        event.preventDefault();
+        return;
+    }
+
     /* Google's "I'm not a robot" box isn't a form field, so check it by hand. */
     const recaptcha = form.querySelector('[data-recaptcha]');
     const recaptchaMissing = Boolean(recaptcha) && !window.grecaptcha?.getResponse();
@@ -520,10 +546,14 @@ document.addEventListener('submit', (event) => {
         return;
     }
 
-    /* Real forms: show the button's busy label while the server works (sending email can take a few seconds). */
+    form.dataset.submitting = 'true';
+
+    /* Real forms: lock the button (with its busy label, if it has one) while the server works. */
     if (!form.matches('[data-demo-form]')) {
         if (event.submitter?.dataset.busy) {
             setBusy(event.submitter, true);
+        } else if (event.submitter) {
+            event.submitter.disabled = true;
         }
 
         return;
@@ -540,6 +570,7 @@ document.addEventListener('submit', (event) => {
             return;
         }
 
+        delete form.dataset.submitting;
         setBusy(button, false);
         form.classList.remove('was-validated');
 

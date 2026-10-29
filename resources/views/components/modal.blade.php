@@ -8,7 +8,7 @@
 --}}
 @php($variant = $danger ? 'danger' : $variant)
 @php($icon ??= ['success' => 'fa-check', 'warning' => 'fa-key', 'danger' => 'fa-trash-can'][$variant] ?? 'fa-check')
-<div class="modal fade" id="{{ $id }}" tabindex="-1" aria-labelledby="{{ $id }}-title" aria-hidden="true" @if ($showOnLoad) data-show-on-load @endif>
+<div class="modal fade" id="{{ $id }}" tabindex="-1" data-bs-backdrop="static" aria-labelledby="{{ $id }}-title" aria-hidden="true" @if ($showOnLoad) data-show-on-load @endif>
     <div @class(['modal-dialog modal-dialog-centered', $size])>
         <form method="POST" class="modal-content" @if ($action) action="{{ $action }}" @else data-demo-form="{{ $message }}" @endif novalidate>
             @csrf

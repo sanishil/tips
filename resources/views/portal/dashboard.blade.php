@@ -97,7 +97,7 @@
         </div>
     </div>
 
-    <div class="modal fade" id="today-prints" tabindex="-1" aria-labelledby="today-prints-title" aria-hidden="true">
+    <div class="modal fade" id="today-prints" tabindex="-1" data-bs-backdrop="static" aria-labelledby="today-prints-title" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">

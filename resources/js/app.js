@@ -94,7 +94,8 @@ async function playIntro() {
         )
         .fromTo(subtitle, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4 })
         .set(caret, { visibility: 'hidden' }, '+=0.2')
-        .addLabel('outro', '+=0.25')
+        .to(logo, { rotation: 360, duration: 0.7, ease: 'power2.inOut' }, '+=0.1')
+        .addLabel('outro', '+=0.05')
         .set(intro, { pointerEvents: 'none' }, 'outro')
         .to(parts, { autoAlpha: 0, y: -8, duration: 0.3 }, 'outro')
         .to(
@@ -122,7 +123,7 @@ if (intro) {
 
 document.addEventListener('click', (event) => {
     const target = event.target.closest(
-        '[data-intro-replay], [data-theme-toggle], [data-step-go], [data-password-toggle], [data-captcha-refresh], [data-resend], [data-export-table], [data-table-clear]',
+        '[data-intro-replay], [data-theme-toggle], [data-step-go], [data-password-toggle], [data-recaptcha-reset], [data-resend], [data-export-table], [data-table-clear]',
     );
 
     if (!target) {
@@ -153,8 +154,8 @@ document.addEventListener('click', (event) => {
         target.querySelector('i')?.classList.replace(reveal ? 'fa-eye' : 'fa-eye-slash', reveal ? 'fa-eye-slash' : 'fa-eye');
     }
 
-    if (target.matches('[data-captcha-refresh]')) {
-        refreshCaptcha(target);
+    if (target.matches('[data-recaptcha-reset]')) {
+        window.grecaptcha?.reset();
     }
 
     if (target.matches('[data-resend]')) {
@@ -174,18 +175,6 @@ document.addEventListener('click', (event) => {
         filterTable(tableId);
     }
 });
-
-/* Captcha (the real one is a server-rendered image) ------------------------ */
-
-function refreshCaptcha(button) {
-    const a = 2 + Math.floor(Math.random() * 8);
-    const b = 1 + Math.floor(Math.random() * a);
-    const add = Math.random() < 0.5;
-    document.getElementById(button.dataset.captchaRefresh).textContent = `${a} ${add ? '+' : '−'} ${b} = ?`;
-    const answer = document.getElementById('captcha');
-    answer.value = '';
-    answer.focus();
-}
 
 /* Forgot-password steps ---------------------------------------------------- */
 
@@ -523,7 +512,12 @@ function setBusy(button, busy) {
 document.addEventListener('submit', (event) => {
     const form = event.target;
 
-    if (form.noValidate && !form.checkValidity()) {
+    /* Google's "I'm not a robot" box isn't a form field, so check it by hand. */
+    const recaptcha = form.querySelector('[data-recaptcha]');
+    const recaptchaMissing = Boolean(recaptcha) && !window.grecaptcha?.getResponse();
+    recaptcha?.querySelector('.invalid-feedback').classList.toggle('d-block', recaptchaMissing);
+
+    if ((form.noValidate && !form.checkValidity()) || recaptchaMissing) {
         event.preventDefault();
         form.classList.add('was-validated');
         form.querySelector(':invalid')?.focus();
@@ -566,6 +560,11 @@ document.addEventListener('submit', (event) => {
         }
     }, 700);
 });
+
+/* Called by the reCAPTCHA widget (data-callback) once the box is ticked. */
+window.recaptchaChecked = () => {
+    document.querySelectorAll('[data-recaptcha] .invalid-feedback').forEach((error) => error.classList.remove('d-block'));
+};
 
 /* Profile photo: check type and size before showing it. */
 document.addEventListener('change', (event) => {

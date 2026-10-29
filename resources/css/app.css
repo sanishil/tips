@@ -376,6 +376,65 @@
         box-shadow: 0 10px 24px -14px rgba(34, 96, 159, 0.45);
     }
 
+    /*
+    | Google's widget is a fixed 304 × 78px. It shrinks in steps to fit the row with the
+    | refresh button; the negative margins take back the space the scale frees.
+    */
+    .recaptcha-row {
+        --recaptcha-scale: 1;
+
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        container-type: inline-size;
+    }
+
+    /* Holds the widget's space with a soft pulse until Google's iframe arrives. */
+    .recaptcha-row .g-recaptcha {
+        width: 304px;
+        height: 78px;
+        flex-shrink: 0;
+        border-radius: 3px;
+        background: var(--bs-tertiary-bg);
+        animation: recaptcha-pulse 1.2s ease-in-out infinite;
+        margin: 0 calc(-304px * (1 - var(--recaptcha-scale))) calc(-78px * (1 - var(--recaptcha-scale))) 0;
+        transform: scale(var(--recaptcha-scale));
+        transform-origin: 0 0;
+    }
+
+    .recaptcha-row .g-recaptcha:has(iframe) {
+        background: none;
+        animation: none;
+    }
+
+    .recaptcha-row .btn {
+        flex-shrink: 0;
+    }
+
+    @container (max-width: 355px) {
+        .recaptcha-row .g-recaptcha {
+            --recaptcha-scale: 0.85;
+        }
+    }
+
+    @container (max-width: 305px) {
+        .recaptcha-row .g-recaptcha {
+            --recaptcha-scale: 0.75;
+        }
+    }
+
+    @container (max-width: 275px) {
+        .recaptcha-row .g-recaptcha {
+            --recaptcha-scale: 0.65;
+        }
+    }
+
+    @container (max-width: 245px) {
+        .recaptcha-row .g-recaptcha {
+            --recaptcha-scale: 0.6;
+        }
+    }
+
     /* Preview */
     .preview-panel {
         padding: 1rem 1.25rem 1.25rem;
@@ -474,6 +533,12 @@
 @keyframes intro-fallback {
     to {
         visibility: hidden;
+    }
+}
+
+@keyframes recaptcha-pulse {
+    50% {
+        opacity: 0.5;
     }
 }
 

@@ -35,10 +35,7 @@
                     <x-row-actions :record="['name' => $student['name'], 'std_id' => $student['std_id']]" :label="$student['name']" delete="delete-student" />
                 </tr>
             @empty
-                <x-empty-state colspan="9" title="No students yet" icon="fa-address-card">
-                    Records appear here once students start printing cover pages.
-                    <a href="{{ route('cover.form') }}">Open the cover page form</a>
-                </x-empty-state>
+                <x-empty-state colspan="9" title="No students yet" icon="fa-address-card" />
             @endforelse
         </tbody>
     </x-table-card>

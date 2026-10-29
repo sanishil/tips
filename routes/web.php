@@ -5,6 +5,7 @@ use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Portal\DepartmentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -51,7 +52,12 @@ foreach (['admin', 'tech'] as $portal) {
 
         Route::view('/', 'portal.dashboard', $shared + ['todayPrints' => []])->name('dashboard');
         Route::view('/students', 'portal.students', $shared + ['students' => []])->name('students');
-        Route::view('/departments', 'portal.departments', $shared)->name('departments');
+        Route::get('/departments', [DepartmentController::class, 'index'])->name('departments');
+        Route::middleware('throttle:30,1')->group(function () {
+            Route::post('/departments', [DepartmentController::class, 'store'])->name('departments.store');
+            Route::put('/departments/{department}', [DepartmentController::class, 'update'])->name('departments.update');
+            Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
+        });
         Route::view('/subjects', 'portal.subjects', $shared + ['subjects' => []])->name('subjects');
         Route::view('/teachers', 'portal.teachers', $shared + ['teachers' => []])->name('teachers');
         Route::view('/profile', 'portal.profile', $shared)->name('profile');

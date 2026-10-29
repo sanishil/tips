@@ -34,9 +34,7 @@
                     <x-row-actions :record="\Illuminate\Support\Arr::except($subject, 'id')" :label="$subject['subjects']" edit="edit-subject" delete="delete-subject" />
                 </tr>
             @empty
-                <x-empty-state colspan="6" title="No subjects yet" icon="fa-bookmark">
-                    Subjects you add here appear in the student form straight away.
-                </x-empty-state>
+                <x-empty-state colspan="6" title="No subjects yet" icon="fa-bookmark" />
             @endforelse
         </tbody>
     </x-table-card>

@@ -450,6 +450,13 @@ document.addEventListener('show.bs.modal', (event) => {
 
     form?.classList.remove('was-validated');
 
+    /* Real forms: send to this row's URL, and drop errors left from another row's failed save. */
+    if (form && event.relatedTarget.dataset.action) {
+        form.action = event.relatedTarget.dataset.action;
+        form.querySelectorAll('.is-invalid').forEach((field) => field.classList.remove('is-invalid'));
+        form.querySelectorAll('.invalid-feedback.d-block').forEach((error) => error.classList.remove('d-block'));
+    }
+
     for (const [key, value] of Object.entries(JSON.parse(record))) {
         modal.querySelectorAll(`[name="${key}"]`).forEach((field) => {
             if (field.type === 'radio') {

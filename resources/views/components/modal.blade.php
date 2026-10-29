@@ -1,7 +1,8 @@
-@props(['id', 'title', 'size' => null, 'submit' => 'Save', 'busy' => 'Saving…', 'message' => null, 'variant' => 'success', 'icon' => null, 'danger' => false, 'action' => null, 'showOnLoad' => false])
+@props(['id', 'title', 'size' => null, 'submit' => 'Save', 'busy' => 'Saving…', 'message' => null, 'variant' => 'success', 'icon' => null, 'danger' => false, 'action' => null, 'method' => 'POST', 'showOnLoad' => false])
 
 {{--
 | With an action the form posts to the server; without one it's a design-only demo form. showOnLoad reopens it after a failed submit.
+| `method` (PUT, DELETE) is sent as Laravel's _method field. A row button's data-action replaces the action when it opens (app.js).
 | Submit colour follows the action: success (add, save, send), warning (resets), danger (delete, deactivate); `danger` is short for variant="danger".
 | `icon` is a Font Awesome name; without one the colour picks it (check, key, trash can).
 --}}
@@ -11,6 +12,9 @@
     <div @class(['modal-dialog modal-dialog-centered', $size])>
         <form method="POST" class="modal-content" @if ($action) action="{{ $action }}" @else data-demo-form="{{ $message }}" @endif novalidate>
             @csrf
+            @if ($method !== 'POST')
+                @method($method)
+            @endif
             <div class="modal-header">
                 <h2 class="modal-title h5 font-display" id="{{ $id }}-title">{{ $title }}</h2>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>

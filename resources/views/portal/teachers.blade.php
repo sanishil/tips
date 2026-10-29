@@ -26,9 +26,7 @@
                     <x-row-actions :record="\Illuminate\Support\Arr::except($teacher, 'id')" :label="$teacher['teacher']" edit="edit-teacher" delete="delete-teacher" />
                 </tr>
             @empty
-                <x-empty-state colspan="4" title="No teachers yet" icon="fa-user">
-                    Add teachers so students can choose who they're submitting to.
-                </x-empty-state>
+                <x-empty-state colspan="4" title="No teachers yet" icon="fa-user" />
             @endforelse
         </tbody>
     </x-table-card>

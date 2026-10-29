@@ -393,6 +393,94 @@
     .preview-panel .cover-paper {
         box-shadow: 0 10px 24px -14px rgba(34, 96, 159, 0.45);
     }
+
+    /* Intro loader: app.js animates it with GSAP. The CSS animation only hides it if the script never runs. */
+    .intro-loader {
+        position: fixed;
+        inset: 0;
+        z-index: 1100;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        padding: 1rem;
+        background: #fff;
+        text-align: center;
+        animation: intro-fallback 0s 4s forwards;
+    }
+
+    .intro-loader-logo {
+        width: 6rem;
+        height: 6rem;
+        object-fit: contain;
+        border-radius: 14px;
+        opacity: 0;
+    }
+
+    /* The hidden full name holds the final size, so the typed text never shifts the layout. */
+    .intro-loader-name {
+        display: grid;
+        margin: 0;
+        font-size: clamp(0.95rem, 4.2vw, 1.75rem);
+        white-space: nowrap;
+        font-weight: 600;
+        line-height: 1.25;
+        text-align: start;
+        color: var(--ink, #1d2733);
+    }
+
+    .intro-loader-name > span {
+        grid-area: 1 / 1;
+    }
+
+    .intro-loader-ghost {
+        visibility: hidden;
+    }
+
+    .intro-loader-caret {
+        display: inline-block;
+        width: 2px;
+        height: 1em;
+        margin-left: 2px;
+        vertical-align: -0.12em;
+        background: var(--orange);
+        animation: intro-caret 0.8s steps(1) infinite;
+    }
+
+    .intro-loader-subtitle {
+        margin: -0.5rem 0 0;
+        color: var(--ink-soft, #5d6876);
+        opacity: 0;
+    }
+
+    .intro-loader-bar {
+        width: 8rem;
+        height: 3px;
+        overflow: hidden;
+        border-radius: 3px;
+        background: var(--lavender-soft);
+    }
+
+    .intro-loader-bar > span {
+        display: block;
+        height: 100%;
+        background: linear-gradient(90deg, var(--brand), var(--lavender), var(--orange));
+        transform: scaleX(0);
+        transform-origin: left;
+    }
+}
+
+@keyframes intro-fallback {
+    to {
+        visibility: hidden;
+    }
+}
+
+@keyframes intro-caret {
+    50% {
+        opacity: 0;
+    }
 }
 
 /* Printing the cover page: app.js copies the preview into #print-root. */

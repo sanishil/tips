@@ -14,15 +14,126 @@ function applyTheme(theme) {
     } catch (e) {}
 }
 
+/* Intro loader (cover page) ----------------------------------------------- */
+
+const intro = document.querySelector('[data-intro]');
+let introTimeline;
+
+/*
+| Logo pops in, the institute name types out, then the logo flies into the
+| header's logo while the white overlay fades away. GSAP is only loaded here.
+*/
+async function playIntro() {
+    intro.style.animation = 'none';
+
+    let gsap;
+
+    try {
+        ({ gsap } = await import('gsap'));
+    } catch (e) {
+        intro.hidden = true;
+        return;
+    }
+
+    const logo = intro.querySelector('[data-intro-logo]');
+    const typed = intro.querySelector('[data-intro-typed]');
+    const caret = intro.querySelector('[data-intro-caret]');
+    const subtitle = intro.querySelector('[data-intro-subtitle]');
+    const bar = intro.querySelector('[data-intro-bar]');
+    const parts = intro.querySelectorAll('.intro-loader-name, [data-intro-subtitle], .intro-loader-bar');
+    const headerLogo = document.querySelector('[data-intro-replay] .brand-mark');
+    const text = typed.dataset.text;
+    const typing = { length: 0 };
+
+    introTimeline?.kill();
+    gsap.set(intro, { autoAlpha: 1, backgroundColor: '#fff', pointerEvents: 'auto' });
+    gsap.set(parts, { autoAlpha: 1, y: 0 });
+    gsap.set(caret, { visibility: 'visible' });
+    typed.textContent = '';
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        typed.textContent = text;
+        gsap.set([logo, subtitle], { opacity: 1, x: 0, y: 0, scale: 1, rotation: 0 });
+        gsap.set(bar, { scaleX: 1 });
+        introTimeline = gsap.to(intro, { autoAlpha: 0, duration: 0.3, delay: 0.6 });
+        return;
+    }
+
+    /* Distance from the loader logo's centre to the header logo's centre. */
+    const toHeader = (axis) => {
+        if (!headerLogo) {
+            return 0;
+        }
+
+        const from = logo.getBoundingClientRect();
+        const to = headerLogo.getBoundingClientRect();
+
+        return axis === 'x' ? to.left + to.width / 2 - (from.left + from.width / 2) : to.top + to.height / 2 - (from.top + from.height / 2);
+    };
+
+    if (headerLogo) {
+        gsap.set(headerLogo, { opacity: 0 });
+    }
+
+    introTimeline = gsap
+        .timeline({ defaults: { ease: 'power2.out' } })
+        .fromTo(logo, { opacity: 0, x: 0, y: 0, scale: 0.4, rotation: -20 }, { opacity: 1, scale: 1, rotation: 0, duration: 0.8, ease: 'back.out(1.7)' })
+        .fromTo(bar, { scaleX: 0 }, { scaleX: 1, duration: 2.4, ease: 'power1.inOut' }, 0)
+        .fromTo(
+            typing,
+            { length: 0 },
+            {
+                length: text.length,
+                duration: text.length * 0.035,
+                ease: 'none',
+                onUpdate: () => {
+                    typed.textContent = text.slice(0, Math.round(typing.length));
+                },
+            },
+            0.5,
+        )
+        .fromTo(subtitle, { opacity: 0, y: 8 }, { opacity: 1, y: 0, duration: 0.4 })
+        .set(caret, { visibility: 'hidden' }, '+=0.2')
+        .addLabel('outro', '+=0.25')
+        .set(intro, { pointerEvents: 'none' }, 'outro')
+        .to(parts, { autoAlpha: 0, y: -8, duration: 0.3 }, 'outro')
+        .to(
+            logo,
+            {
+                x: () => toHeader('x'),
+                y: () => toHeader('y'),
+                scale: () => (headerLogo ? headerLogo.offsetWidth / logo.offsetWidth : 1),
+                opacity: headerLogo ? 1 : 0,
+                duration: 0.7,
+                ease: 'power3.inOut',
+            },
+            'outro',
+        )
+        .to(intro, { backgroundColor: 'rgba(255, 255, 255, 0)', duration: 0.6 }, 'outro+=0.1')
+        .set(headerLogo ?? {}, { opacity: 1 })
+        .set(intro, { autoAlpha: 0 });
+}
+
+if (intro) {
+    playIntro();
+}
+
 /* Click actions ---------------------------------------------------------- */
 
 document.addEventListener('click', (event) => {
     const target = event.target.closest(
-        '[data-theme-toggle], [data-step-go], [data-password-toggle], [data-captcha-refresh], [data-resend], [data-export-table], [data-table-clear]',
+        '[data-intro-replay], [data-theme-toggle], [data-step-go], [data-password-toggle], [data-captcha-refresh], [data-resend], [data-export-table], [data-table-clear]',
     );
 
     if (!target) {
         return;
+    }
+
+    /* On the cover page the logo replays the intro instead of reloading the form. */
+    if (target.matches('[data-intro-replay]') && intro) {
+        event.preventDefault();
+        window.scrollTo({ top: 0 });
+        playIntro();
     }
 
     if (target.matches('[data-theme-toggle]')) {

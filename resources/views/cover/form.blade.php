@@ -1,4 +1,6 @@
 <x-layouts.app title="Assignment cover page" :themeable="false" class="intake d-flex flex-column min-vh-100">
+    <x-intro-loader />
+
     <x-site-header>
         <a href="{{ route('login') }}" class="btn btn-sm btn-primary flex-shrink-0">
             <i class="fa-solid fa-right-to-bracket me-1" aria-hidden="true"></i> Login

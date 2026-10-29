@@ -6,12 +6,15 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreCourseRequest;
 use App\Http\Requests\UpdateCourseRequest;
 use App\Models\Course;
+use App\Models\SubCourse;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 
 /**
- * Courses, managed from both portals (/admin/courses and /tech/courses).
+ * Courses and their sub-courses, managed from both portals (/admin/courses and /tech/courses).
+ * Sub-courses are listed on the same page; SubCourseController saves them.
  */
 class CourseController extends Controller
 {
@@ -19,7 +22,8 @@ class CourseController extends Controller
     {
         return view('portal.courses', [
             'portal' => $request->user()->role->value,
-            'courses' => Course::orderBy('name')->get(),
+            'courses' => Course::withCount('subCourses')->orderBy('name')->get(),
+            'subCourses' => SubCourse::with('course')->get()->sortBy(['course.name', 'name'])->values(),
         ]);
     }
 
@@ -27,25 +31,38 @@ class CourseController extends Controller
     {
         $course = Course::create($request->validated());
 
-        return $this->backToList($request, "“{$course->name}” added.");
+        return $this->backToList($request, 'status', "“{$course->name}” added.");
     }
 
     public function update(UpdateCourseRequest $request, Course $course): RedirectResponse
     {
         $course->update($request->validated());
 
-        return $this->backToList($request, "“{$course->name}” saved.");
+        return $this->backToList($request, 'status', "“{$course->name}” saved.");
     }
 
+    /**
+     * A course that still has sub-courses can't go (the database refuses too); say why instead.
+     */
     public function destroy(Request $request, Course $course): RedirectResponse
     {
+        $subCourseCount = $course->subCourses()->count();
+
+        if ($subCourseCount > 0) {
+            return $this->backToList(
+                $request,
+                'error',
+                "“{$course->name}” still has {$subCourseCount} ".Str::plural('sub-course', $subCourseCount).'. Move or delete them first.',
+            );
+        }
+
         $course->delete();
 
-        return $this->backToList($request, "“{$course->name}” deleted.");
+        return $this->backToList($request, 'status', "“{$course->name}” deleted.");
     }
 
-    private function backToList(Request $request, string $message): RedirectResponse
+    private function backToList(Request $request, string $type, string $message): RedirectResponse
     {
-        return redirect()->route($request->user()->role->value.'.courses')->with('status', $message);
+        return redirect()->route($request->user()->role->value.'.courses')->with($type, $message);
     }
 }

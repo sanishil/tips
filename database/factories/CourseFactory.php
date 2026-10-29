@@ -18,8 +18,7 @@ class CourseFactory extends Factory
     public function definition(): array
     {
         return [
-            'name' => 'B.'.ucfirst(fake()->unique()->lexify('???')),
-            'semesters' => fake()->randomElement([4, 6, 8]),
+            'name' => strtoupper(fake()->unique()->lexify('??')).' Level',
         ];
     }
 }

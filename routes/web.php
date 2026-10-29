@@ -8,6 +8,7 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\DepartmentController;
 use App\Http\Controllers\Portal\DesignationController;
+use App\Http\Controllers\Portal\SubCourseController;
 use App\Http\Controllers\Portal\TeacherController;
 use Illuminate\Support\Facades\Route;
 
@@ -73,6 +74,9 @@ foreach (['admin', 'tech'] as $portal) {
             Route::post('/courses', [CourseController::class, 'store'])->name('courses.store');
             Route::put('/courses/{course}', [CourseController::class, 'update'])->name('courses.update');
             Route::delete('/courses/{course}', [CourseController::class, 'destroy'])->name('courses.destroy');
+            Route::post('/sub-courses', [SubCourseController::class, 'store'])->name('sub-courses.store');
+            Route::put('/sub-courses/{subCourse}', [SubCourseController::class, 'update'])->name('sub-courses.update');
+            Route::delete('/sub-courses/{subCourse}', [SubCourseController::class, 'destroy'])->name('sub-courses.destroy');
         });
         Route::get('/teachers', [TeacherController::class, 'index'])->name('teachers');
         Route::middleware('throttle:30,1')->group(function () {

@@ -6,27 +6,22 @@ use Database\Factories\CourseFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * A course students are enrolled in (e.g. B.Sc, BPT) and how many semesters it runs.
+ * A course level (e.g. UG, PG), split into sub-courses (e.g. UG → Paramedical, PG → MLT).
  */
-#[Fillable(['name', 'semesters'])]
+#[Fillable(['name'])]
 class Course extends Model
 {
     /** @use HasFactory<CourseFactory> */
     use HasFactory;
 
-    public const MAX_SEMESTERS = 12;
-
     /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
+     * @return HasMany<SubCourse, $this>
      */
-    protected function casts(): array
+    public function subCourses(): HasMany
     {
-        return [
-            'semesters' => 'integer',
-        ];
+        return $this->hasMany(SubCourse::class);
     }
 }

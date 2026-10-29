@@ -232,6 +232,205 @@
     }
 }
 
+/*
+| Cover page form: branded with the logo's blue, lavender and orange.
+*/
+[data-bs-theme='light'] body.intake {
+    background-color: #fff;
+}
+
+@layer components {
+    .intake {
+        --brand: #22609f;
+        --brand-dark: #194c80;
+        --lavender: #b49ccc;
+        --lavender-soft: #f3eff8;
+        --orange: #ee8a2c;
+        --ink: #1d2733;
+        --ink-soft: #5d6876;
+        --line: #dbe1e8;
+
+        color: var(--ink);
+    }
+
+    .intake-muted {
+        color: var(--ink-soft);
+    }
+
+    /* Header band */
+    .brand-band {
+        background-color: var(--brand);
+        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cpath d='M26 19h4v7h7v4h-7v7h-4v-7h-7v-4h7z' fill='%23fff' fill-opacity='.045'/%3E%3C/svg%3E");
+        border-bottom: 4px solid var(--lavender);
+        color: #fff;
+    }
+
+    .brand-band-name {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: #fff;
+        font-weight: 700;
+        line-height: 1.25;
+        text-decoration: none;
+    }
+
+    .brand-band-name:hover {
+        color: #fff;
+    }
+
+    .brand-band-name img {
+        width: 3rem;
+        height: 3rem;
+        flex-shrink: 0;
+        padding: 2px;
+        border-radius: 50%;
+        background: #fff;
+        object-fit: contain;
+    }
+
+    .brand-band-name small {
+        display: block;
+        font-weight: 400;
+        font-size: 0.8125rem;
+        color: #dcd0ea;
+    }
+
+    .btn-band {
+        --bs-btn-color: #fff;
+        --bs-btn-border-color: rgba(255, 255, 255, 0.6);
+        --bs-btn-hover-color: var(--brand);
+        --bs-btn-hover-bg: #fff;
+        --bs-btn-hover-border-color: #fff;
+        --bs-btn-active-color: var(--brand);
+        --bs-btn-active-bg: #fff;
+        --bs-btn-active-border-color: #fff;
+        --bs-btn-border-radius: 6px;
+    }
+
+    /* Form */
+    .cover-form {
+        --bs-border-color: var(--line);
+        --bs-body-bg: #f8fafc;
+        --bs-border-radius: 8px;
+    }
+
+    .form-part + .form-part {
+        margin-top: 2rem;
+        padding-top: 1.75rem;
+        border-top: 1px solid var(--line);
+    }
+
+    .form-part-title {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+        font-size: 1.0625rem;
+        font-weight: 700;
+        color: var(--brand);
+    }
+
+    .form-part-title i {
+        font-size: 0.8rem;
+        color: var(--orange);
+    }
+
+    .cover-form .form-label {
+        margin-bottom: 0.35rem;
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    .cover-form .form-control,
+    .cover-form .form-select {
+        padding-top: 0.6rem;
+        padding-bottom: 0.6rem;
+    }
+
+    .cover-form .form-control:focus,
+    .cover-form .form-select:focus {
+        border-color: var(--brand);
+        background-color: #fff;
+        box-shadow: 0 0 0 3px rgba(180, 156, 204, 0.45);
+    }
+
+    .cover-form .form-control[readonly] {
+        border-style: dashed;
+        background-color: var(--lavender-soft);
+        color: var(--ink-soft);
+    }
+
+    .cover-form.was-validated .form-control:valid,
+    .cover-form.was-validated .form-select:valid {
+        border-color: var(--line);
+        background-image: none;
+    }
+
+    .cover-form.was-validated .form-control:valid {
+        padding-right: 0.75rem;
+    }
+
+    .cover-form.was-validated .form-select:valid {
+        --bs-form-select-bg-icon: none;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 1.25rem;
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid var(--line);
+    }
+
+    .btn-brand {
+        --bs-btn-padding-x: 1.4rem;
+        --bs-btn-padding-y: 0.65rem;
+        --bs-btn-font-weight: 600;
+        --bs-btn-border-radius: 8px;
+        --bs-btn-color: #fff;
+        --bs-btn-bg: var(--brand);
+        --bs-btn-border-color: var(--brand);
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: var(--brand-dark);
+        --bs-btn-hover-border-color: var(--brand-dark);
+        --bs-btn-active-color: #fff;
+        --bs-btn-active-bg: var(--brand-dark);
+        --bs-btn-active-border-color: var(--brand-dark);
+        --bs-btn-focus-shadow-rgb: 180, 156, 204;
+    }
+
+    .btn-plain {
+        --bs-btn-padding-x: 0.25rem;
+        --bs-btn-color: var(--ink-soft);
+        --bs-btn-hover-color: var(--ink);
+        --bs-btn-active-color: var(--ink);
+        --bs-btn-border-color: transparent;
+        --bs-btn-hover-border-color: transparent;
+        --bs-btn-active-border-color: transparent;
+    }
+
+    /* Preview */
+    .preview-panel {
+        padding: 1rem 1.25rem 1.25rem;
+        border-radius: 12px;
+        background: var(--lavender-soft);
+    }
+
+    .preview-label {
+        margin-bottom: 0.75rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: var(--brand);
+    }
+
+    .preview-panel .cover-paper {
+        box-shadow: 0 10px 24px -14px rgba(34, 96, 159, 0.45);
+    }
+}
+
 /* Printing the cover page: app.js copies the preview into #print-root. */
 #print-root {
     display: none;

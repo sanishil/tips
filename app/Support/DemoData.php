@@ -12,7 +12,7 @@ class DemoData
     /**
      * Shared dropdown options.
      *
-     * @return array{semesters: list<string>, courses: list<string>, titles: list<string>, sections: list<string>, pageTypes: list<string>, designations: list<string>}
+     * @return array{semesters: list<string>, courses: list<string>, titles: list<string>, sections: list<string>, pageTypes: list<string>, designations: list<string>, wards: list<string>}
      */
     public static function options(): array
     {
@@ -21,8 +21,22 @@ class DemoData
             'courses' => ['B.Sc', 'BPT', 'B.Optom', 'Diploma'],
             'titles' => ['Mr.', 'Miss.', 'Ms.', 'Mrs.'],
             'sections' => ['A', 'B', 'C', 'D'],
-            'pageTypes' => ['Assignment', 'Practical Record', 'Case Study', 'Project Report'],
+            'pageTypes' => ['Assignment', 'Case Presentation', 'Practical Record', 'Case Study', 'Project Report'],
             'designations' => ['Principal', 'Professor', 'Associate Professor', 'Assistant Professor', 'Lecturer', 'Tutor', 'HOD'],
+            'wards' => [
+                'Female Medical Ward',
+                'Male Medical Ward',
+                'Female Surgical Ward',
+                'Male Surgical Ward',
+                'Pediatric Ward',
+                'Orthopedic Ward',
+                'Maternity Ward',
+                'Gynecology Ward',
+                'ICU',
+                'Emergency Ward',
+                'Post-Operative Ward',
+                'Physiotherapy OPD',
+            ],
         ];
     }
 

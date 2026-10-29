@@ -153,7 +153,7 @@ function startResendTimer(button) {
 
 /* Live cover-page preview -------------------------------------------------- */
 
-document.addEventListener('input', (event) => {
+const updateCoverPreview = (event) => {
     const key = event.target.dataset?.preview;
 
     if (!key) {
@@ -169,23 +169,53 @@ document.addEventListener('input', (event) => {
     document.querySelectorAll(`[data-preview-target="${key}"]`).forEach((el) => {
         el.textContent = value || el.dataset.placeholder || '';
     });
-});
 
-/* <select data-autofill="inputId">: copy the chosen option's data-value into another field. */
-document.addEventListener('change', (event) => {
-    const targetId = event.target.dataset?.autofill;
+    /* Optional lines on the sheet only show once they have a value. */
+    document.querySelectorAll(`[data-preview-row="${key}"]`).forEach((row) => {
+        row.hidden = !value;
+    });
+};
+
+document.addEventListener('input', updateCoverPreview);
+document.addEventListener('change', updateCoverPreview);
+
+/*
+| <select data-autofill="inputId">: copy the chosen option's data-value into another field.
+| On an <input list> it only fills in when the typed text matches a datalist option,
+| so a name typed by hand leaves the other field for the student to fill.
+*/
+const autofill = (event) => {
+    const source = event.target;
+    const targetId = source.dataset?.autofill;
 
     if (!targetId) {
         return;
     }
 
-    const target = document.getElementById(targetId);
-    target.value = event.target.selectedOptions[0]?.dataset.value ?? '';
-    target.dispatchEvent(new Event('input', { bubbles: true }));
-});
+    let value;
 
-/* <select data-option-filter='{"dept":"std_dept"}'>: only show options whose data-dept matches #std_dept. */
-document.querySelectorAll('select[data-option-filter]').forEach((select) => {
+    if (source.list) {
+        value = [...source.list.options].find((option) => !option.disabled && option.value === source.value)?.dataset.value;
+
+        if (value === undefined) {
+            return;
+        }
+    } else if (event.type === 'change') {
+        value = source.selectedOptions[0]?.dataset.value ?? '';
+    } else {
+        return;
+    }
+
+    const target = document.getElementById(targetId);
+    target.value = value;
+    target.dispatchEvent(new Event('input', { bubbles: true }));
+};
+
+document.addEventListener('input', autofill);
+document.addEventListener('change', autofill);
+
+/* <select|datalist data-option-filter='{"dept":"std_dept"}'>: only offer options whose data-dept matches #std_dept. */
+document.querySelectorAll('select[data-option-filter], datalist[data-option-filter]').forEach((select) => {
     const rules = Object.entries(JSON.parse(select.dataset.optionFilter));
     const placeholder = select.querySelector('option[value=""]');
 
@@ -208,13 +238,15 @@ document.querySelectorAll('select[data-option-filter]').forEach((select) => {
             matches += visible ? 1 : 0;
         }
 
-        if (select.selectedOptions[0]?.disabled) {
+        if (select.selectedOptions?.[0]?.disabled) {
             select.value = '';
             select.dispatchEvent(new Event('input', { bubbles: true }));
             select.dispatchEvent(new Event('change', { bubbles: true }));
         }
 
-        placeholder.textContent = matches ? placeholder.dataset.label : placeholder.dataset.empty;
+        if (placeholder) {
+            placeholder.textContent = matches ? placeholder.dataset.label : placeholder.dataset.empty;
+        }
     };
 
     rules.forEach(([, sourceId]) => document.getElementById(sourceId).addEventListener('change', update));
@@ -226,7 +258,7 @@ document.addEventListener('reset', (event) => {
     event.target.classList.remove('was-validated');
 
     setTimeout(() => {
-        event.target.querySelectorAll('select[data-option-filter]').forEach((select) => select.dispatchEvent(new Event('refresh')));
+        event.target.querySelectorAll('[data-option-filter]').forEach((select) => select.dispatchEvent(new Event('refresh')));
         event.target.querySelectorAll('[data-preview]').forEach((field) => field.dispatchEvent(new Event('input', { bubbles: true })));
     });
 });

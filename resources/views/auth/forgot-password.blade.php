@@ -4,7 +4,7 @@
             @foreach (['Email', 'Code', 'New password'] as $index => $label)
                 <li class="flex-fill vstack gap-1">
                     <span class="step-bar" data-step-indicator="{{ $index + 1 }}" data-active="{{ $index === 0 ? 'true' : 'false' }}"></span>
-                    <span class="small text-body-secondary">{{ $label }}</span>
+                    <span class="small intake-muted">{{ $label }}</span>
                 </li>
             @endforeach
         </ol>
@@ -12,7 +12,7 @@
         {{-- Step 1: ask for a code --}}
         <div data-step="1">
             <h1 class="h3 font-display mb-1">Reset your password</h1>
-            <p class="text-body-secondary">We'll email you a 6-digit code.</p>
+            <p class="intake-muted">We'll email you a 6-digit code.</p>
             <div class="vstack gap-3">
                 <div>
                     <label class="form-label" for="reset_email">Email</label>
@@ -26,7 +26,7 @@
         {{-- Step 2: check the code --}}
         <div data-step="2" hidden>
             <h1 class="h3 font-display mb-1">Check your email</h1>
-            <p class="text-body-secondary">We sent a code to <strong class="text-body-emphasis" data-masked-email></strong>. It works for 10 minutes.</p>
+            <p class="intake-muted">We sent a code to <strong class="text-body-emphasis" data-masked-email></strong>. It works for 10 minutes.</p>
             <div class="vstack gap-3">
                 <div>
                     <label class="form-label" for="otp">6-digit code</label>
@@ -46,7 +46,7 @@
         <form method="POST" data-step="3" hidden data-demo-form data-redirect="{{ route('login', ['reset' => 1]) }}" novalidate>
             @csrf
             <h1 class="h3 font-display mb-1">Choose a new password</h1>
-            <p class="text-body-secondary">You'll be signed out on any other device.</p>
+            <p class="intake-muted">You'll be signed out on any other device.</p>
             <div class="vstack gap-3">
                 <div>
                     <label class="form-label" for="new_password">New password</label>

@@ -23,14 +23,14 @@
         <tbody>
             @forelse ($students as $student)
                 <tr data-dept="{{ $student['std_dept'] }}">
-                    <td data-label="Student" class="fw-semibold">{{ $student['name'] }}</td>
-                    <td data-label="College ID" class="font-monospace">{{ $student['std_id'] }}</td>
-                    <td data-label="Department">{{ $student['std_dept'] }}</td>
-                    <td data-label="Course">{{ $student['course'] }}, {{ $student['sem'] }} sem, sec {{ $student['section'] }}</td>
-                    <td data-label="Last subject">{{ $student['subjects'] }} <span class="text-body-secondary">({{ $student['code'] }})</span></td>
-                    <td data-label="Teacher">{{ $student['f_name'] }}</td>
-                    <td data-label="Reprints" class="text-end">{{ $student['reprint'] }}</td>
-                    <td data-label="Submitted" data-export="{{ $student['dos'] }}">{{ \Illuminate\Support\Carbon::parse($student['dos'])->format('j M Y') }}</td>
+                    <td class="fw-semibold">{{ $student['name'] }}</td>
+                    <td class="font-monospace">{{ $student['std_id'] }}</td>
+                    <td>{{ $student['std_dept'] }}</td>
+                    <td>{{ $student['course'] }}, {{ $student['sem'] }} sem, sec {{ $student['section'] }}</td>
+                    <td>{{ $student['subjects'] }} <span class="text-body-secondary">({{ $student['code'] }})</span></td>
+                    <td>{{ $student['f_name'] }}</td>
+                    <td class="text-end">{{ $student['reprint'] }}</td>
+                    <td data-export="{{ $student['dos'] }}">{{ \Illuminate\Support\Carbon::parse($student['dos'])->format('j M Y') }}</td>
                     <x-row-actions :record="['name' => $student['name'], 'std_id' => $student['std_id']]" :label="$student['name']" delete="delete-student" />
                 </tr>
             @empty

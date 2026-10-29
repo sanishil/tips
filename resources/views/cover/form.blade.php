@@ -1,18 +1,9 @@
 <x-layouts.app title="Assignment cover page" :themeable="false" class="intake d-flex flex-column min-vh-100">
-    <header class="brand-band">
-        <div class="container-xl d-flex align-items-center justify-content-between gap-3 py-3">
-            <a href="{{ route('cover.form') }}" class="brand-band-name">
-                <img src="{{ asset('img/logo.webp') }}" alt="" aria-hidden="true">
-                <span>
-                    Tripura Institute of Paramedical Sciences
-                    <small>Assignment cover page</small>
-                </span>
-            </a>
-            <a href="{{ route('login') }}" class="btn btn-sm btn-band flex-shrink-0">
-                <i class="fa-solid fa-right-to-bracket me-1" aria-hidden="true"></i> Login
-            </a>
-        </div>
-    </header>
+    <x-site-header>
+        <a href="{{ route('login') }}" class="btn btn-sm btn-primary flex-shrink-0">
+            <i class="fa-solid fa-right-to-bracket me-1" aria-hidden="true"></i> Login
+        </a>
+    </x-site-header>
 
     <main id="main" class="container-xl py-4 py-lg-5 flex-grow-1">
         <h1 class="font-display h2 mb-1">Assignment cover page</h1>
@@ -20,7 +11,7 @@
 
         <div class="row g-4 g-xl-5">
             <div class="col-lg-7">
-                <form method="POST" class="cover-form" data-print-form novalidate>
+                <form method="POST" class="brand-form" data-print-form novalidate>
                     @csrf
                     <section class="form-part">
                         <h2 class="form-part-title"><i class="fa-solid fa-plus" aria-hidden="true"></i> Student details</h2>
@@ -176,8 +167,8 @@
                     </section>
 
                     <div class="form-actions">
-                        <button type="reset" class="btn btn-plain">Clear</button>
-                        <button type="submit" class="btn btn-brand">
+                        <button type="reset" class="btn btn-danger">Clear</button>
+                        <button type="submit" class="btn btn-success">
                             <i class="fa-solid fa-print me-1" aria-hidden="true"></i> Print cover page
                         </button>
                     </div>

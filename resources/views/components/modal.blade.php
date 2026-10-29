@@ -1,7 +1,7 @@
 @props(['id', 'title', 'size' => null, 'submit' => 'Save', 'busy' => 'Saving…', 'message' => null, 'danger' => false])
 
 <div class="modal fade" id="{{ $id }}" tabindex="-1" aria-labelledby="{{ $id }}-title" aria-hidden="true">
-    <div @class(['modal-dialog modal-dialog-centered modal-fullscreen-sm-down', $size])>
+    <div @class(['modal-dialog modal-dialog-centered', $size])>
         <form method="POST" class="modal-content" data-demo-form="{{ $message }}" novalidate>
             @csrf
             <div class="modal-header">

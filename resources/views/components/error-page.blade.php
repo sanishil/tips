@@ -1,9 +1,7 @@
 @props(['code', 'title'])
 
 <x-layouts.app :title="$title" class="d-flex flex-column min-vh-100">
-    <header class="container-xl py-3">
-        <a href="{{ route('cover.form') }}" class="text-decoration-none"><x-brand /></a>
-    </header>
+    <x-site-header />
 
     <main id="main" class="flex-grow-1 container-xl d-flex align-items-center py-5">
         <div class="tw:max-w-lg">
@@ -12,7 +10,7 @@
             <div class="text-body-secondary mb-4">{{ $slot }}</div>
             <div class="d-flex flex-wrap gap-2">
                 <a href="{{ route('cover.form') }}" class="btn btn-primary">Go to the cover page form</a>
-                <a href="{{ route('login') }}" class="btn btn-outline-secondary">Staff sign in</a>
+                <a href="{{ route('login') }}" class="btn btn-outline-secondary">Sign in</a>
             </div>
         </div>
     </main>

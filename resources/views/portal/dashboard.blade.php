@@ -1,9 +1,9 @@
 @php
     $figures = [
-        'Students' => array_sum(array_column($departments, 'students')),
-        'Teachers' => array_sum(array_column($departments, 'teachers')),
-        'Subjects' => array_sum(array_column($departments, 'subjects')),
-        'Printed today' => count($todayPrints),
+        ['label' => 'Students', 'icon' => 'fa-user-graduate', 'value' => array_sum(array_column($departments, 'students'))],
+        ['label' => 'Teachers', 'icon' => 'fa-chalkboard-user', 'value' => array_sum(array_column($departments, 'teachers'))],
+        ['label' => 'Subjects', 'icon' => 'fa-book', 'value' => array_sum(array_column($departments, 'subjects'))],
+        ['label' => 'Printed today', 'icon' => 'fa-print', 'value' => count($todayPrints)],
     ];
     $maxStudents = max(array_column($departments, 'students') ?: [1]);
 @endphp
@@ -11,15 +11,18 @@
 <x-layouts.portal :portal="$portal" title="Dashboard">
     <x-page-header title="Dashboard" :subtitle="now()->format('l, j F Y')" />
 
-    <div class="card shadow-sm mb-4">
-        <div class="row g-0 figure-strip">
-            @foreach ($figures as $label => $value)
-                <div class="col-sm-6 col-xl-3 px-4 py-3">
-                    <p class="small text-body-secondary mb-1">{{ $label }}</p>
-                    <p class="h3 font-display mb-0 tw:tabular-nums">{{ number_format($value) }}</p>
+    <div class="row g-3 mb-4">
+        @foreach ($figures as $figure)
+            <div class="col-sm-6 col-xl-3">
+                <div class="card stat-card shadow-sm h-100">
+                    <span class="stat-icon"><i class="fa-solid {{ $figure['icon'] }}" aria-hidden="true"></i></span>
+                    <span>
+                        <span class="d-block small text-body-secondary">{{ $figure['label'] }}</span>
+                        <span class="d-block h3 font-display mb-0 tw:tabular-nums">{{ number_format($figure['value']) }}</span>
+                    </span>
                 </div>
-            @endforeach
-        </div>
+            </div>
+        @endforeach
     </div>
 
     <div class="row g-4">
@@ -30,24 +33,24 @@
                     <a href="{{ route($portal.'.departments') }}" class="small">Manage</a>
                 </div>
                 <div class="table-responsive">
-                    <table class="table table-stack align-middle mb-0">
+                    <table class="table align-middle mb-0">
                         <thead>
                             <tr><th>Department</th><th class="tw:w-2/5">Students</th><th class="text-end">Teachers</th><th class="text-end">Subjects</th></tr>
                         </thead>
                         <tbody>
                             @forelse ($departments as $department)
                                 <tr>
-                                    <td data-label="Department" class="fw-semibold">{{ $department['dept_name'] }}</td>
-                                    <td data-label="Students">
-                                        <span class="d-flex align-items-center gap-2 w-100 justify-content-end justify-content-md-start">
+                                    <td class="fw-semibold">{{ $department['dept_name'] }}</td>
+                                    <td>
+                                        <span class="d-flex align-items-center gap-2">
                                             <span class="tw:tabular-nums tw:w-8">{{ $department['students'] }}</span>
-                                            <span class="progress flex-grow-1 d-none d-md-flex" style="height: 6px" aria-hidden="true">
+                                            <span class="progress flex-grow-1 tw:min-w-24" style="height: 6px" aria-hidden="true">
                                                 <span class="progress-bar" style="width: {{ round($department['students'] / $maxStudents * 100) }}%"></span>
                                             </span>
                                         </span>
                                     </td>
-                                    <td data-label="Teachers" class="text-end">{{ $department['teachers'] }}</td>
-                                    <td data-label="Subjects" class="text-end">{{ $department['subjects'] }}</td>
+                                    <td class="text-end">{{ $department['teachers'] }}</td>
+                                    <td class="text-end">{{ $department['subjects'] }}</td>
                                 </tr>
                             @empty
                                 <x-empty-state colspan="4" title="No departments yet">
@@ -90,25 +93,25 @@
     </div>
 
     <div class="modal fade" id="today-prints" tabindex="-1" aria-labelledby="today-prints-title" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable modal-fullscreen-sm-down">
+        <div class="modal-dialog modal-dialog-centered modal-lg modal-dialog-scrollable">
             <div class="modal-content">
                 <div class="modal-header">
                     <h2 class="modal-title h5 font-display" id="today-prints-title">Printed today</h2>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-0">
-                    <table class="table table-stack align-middle mb-0">
+                    <table class="table align-middle mb-0">
                         <thead>
                             <tr><th>Time</th><th>College ID</th><th>Name</th><th>Subject</th><th>Type</th></tr>
                         </thead>
                         <tbody>
                             @foreach ($todayPrints as $print)
                                 <tr>
-                                    <td data-label="Time" class="tw:tabular-nums">{{ $print['time'] }}</td>
-                                    <td data-label="College ID" class="font-monospace">{{ $print['std_id'] }}</td>
-                                    <td data-label="Name">{{ $print['name'] }}</td>
-                                    <td data-label="Subject">{{ $print['subject'] }}</td>
-                                    <td data-label="Type">{{ $print['page_type'] }}</td>
+                                    <td class="tw:tabular-nums">{{ $print['time'] }}</td>
+                                    <td class="font-monospace">{{ $print['std_id'] }}</td>
+                                    <td>{{ $print['name'] }}</td>
+                                    <td>{{ $print['subject'] }}</td>
+                                    <td>{{ $print['page_type'] }}</td>
                                 </tr>
                             @endforeach
                         </tbody>

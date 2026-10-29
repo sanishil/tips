@@ -10,11 +10,11 @@
         <tbody>
             @forelse ($departments as $department)
                 <tr>
-                    <td data-label="Department" class="fw-semibold">{{ $department['dept_name'] }}</td>
-                    <td data-label="Head">{{ $department['hod'] }}</td>
-                    <td data-label="Students" class="text-end">{{ $department['students'] }}</td>
-                    <td data-label="Teachers" class="text-end">{{ $department['teachers'] }}</td>
-                    <td data-label="Subjects" class="text-end">{{ $department['subjects'] }}</td>
+                    <td class="fw-semibold">{{ $department['dept_name'] }}</td>
+                    <td>{{ $department['hod'] }}</td>
+                    <td class="text-end">{{ $department['students'] }}</td>
+                    <td class="text-end">{{ $department['teachers'] }}</td>
+                    <td class="text-end">{{ $department['subjects'] }}</td>
                     <x-row-actions :record="['dept_name' => $department['dept_name'], 'hod' => $department['hod']]" :label="$department['dept_name']" edit="edit-department" delete="delete-department" />
                 </tr>
             @empty

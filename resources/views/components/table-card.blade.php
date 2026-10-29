@@ -15,7 +15,7 @@
     </div>
 
     <div class="table-responsive">
-        <table id="{{ $id }}" class="table table-hover table-stack align-middle mb-0">
+        <table id="{{ $id }}" class="table table-hover align-middle mb-0">
             {{ $slot }}
         </table>
     </div>

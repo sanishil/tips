@@ -19,11 +19,25 @@
 }
 
 [data-bs-theme='light'] body {
-    background-color: #f5f4ef;
+    background-color: #f4f6fa;
 }
 
 [data-bs-theme='dark'] body {
-    background-color: #131516;
+    background-color: #11161c;
+}
+
+/* Brand colours, taken from the logo. */
+:root {
+    --brand: #22609f;
+    --brand-dark: #194c80;
+    --brand-text: #22609f;
+    --lavender: #b49ccc;
+    --lavender-soft: #f3eff8;
+    --orange: #ee8a2c;
+}
+
+[data-bs-theme='dark'] {
+    --brand-text: #8fb6e0;
 }
 
 @layer components {
@@ -40,26 +54,50 @@
         border-radius: 6px;
     }
 
-    /* Sidebar ----------------------------------------------------------- */
+    /* Menu panel: opened from the header's Menu button on every screen size. */
 
-    @media (min-width: 992px) {
-        .sidebar {
-            position: fixed;
-            inset: 0 auto 0 0;
-            z-index: 1030;
-            width: 15.5rem;
-        }
+    .sidebar {
+        --bs-offcanvas-width: 18rem;
+    }
 
-        .with-sidebar {
-            padding-left: 15.5rem;
-        }
+    .sidebar-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--bs-emphasis-color);
+        font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
+        font-weight: 600;
+        line-height: 1.2;
+        text-decoration: none;
+    }
+
+    .sidebar-brand:hover {
+        color: var(--bs-emphasis-color);
+    }
+
+    .sidebar-brand img {
+        width: 2.5rem;
+        height: 2.5rem;
+        flex-shrink: 0;
+        border-radius: 50%;
+        object-fit: contain;
+    }
+
+    .sidebar-brand small {
+        display: block;
+        font-family: var(--bs-body-font-family);
+        font-size: 0.8125rem;
+        font-weight: 400;
+        color: var(--bs-secondary-color);
     }
 
     .sidebar .nav-heading {
-        margin: 1rem 0 0.25rem;
+        margin: 1.25rem 0 0.35rem;
         padding: 0 0.75rem;
-        font-size: 0.75rem;
-        font-weight: 600;
+        font-size: 0.7rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
         color: var(--bs-secondary-color);
     }
 
@@ -67,7 +105,7 @@
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        padding: 0.45rem 0.75rem;
+        padding: 0.5rem 0.75rem;
         border-radius: var(--bs-border-radius);
         color: var(--bs-body-color);
     }
@@ -84,13 +122,38 @@
 
     .sidebar .nav-link.active {
         background: var(--bs-primary-bg-subtle);
-        color: var(--bs-primary-text-emphasis);
+        color: var(--brand-text);
         font-weight: 600;
-        box-shadow: inset 3px 0 0 var(--bs-primary);
+        box-shadow: inset 3px 0 0 var(--orange);
     }
 
     .sidebar .nav-link.active i {
-        color: inherit;
+        color: var(--orange);
+    }
+
+    /* Portal pages ------------------------------------------------------ */
+
+    .portal .card-header h2 {
+        font-weight: 700;
+        color: var(--brand-text);
+    }
+
+    .stat-card {
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem 1.25rem;
+    }
+
+    .stat-icon {
+        display: inline-grid;
+        place-items: center;
+        flex-shrink: 0;
+        width: 2.75rem;
+        height: 2.75rem;
+        border-radius: var(--bs-border-radius-lg);
+        background: var(--bs-primary-bg-subtle);
+        color: var(--brand-text);
     }
 
     /* Small pieces ------------------------------------------------------ */
@@ -132,27 +195,6 @@
         --bs-btn-hover-color: var(--bs-danger-text-emphasis);
     }
 
-    .figure-strip > div + div {
-        border-top: 1px solid var(--bs-border-color);
-    }
-
-    @media (min-width: 576px) {
-        .figure-strip > div + div {
-            border-top: 0;
-            border-left: 1px solid var(--bs-border-color);
-        }
-
-        .figure-strip > div:nth-child(3) {
-            border-left: 0;
-        }
-    }
-
-    @media (min-width: 1200px) {
-        .figure-strip > div:nth-child(3) {
-            border-left: 1px solid var(--bs-border-color);
-        }
-    }
-
     .step-bar {
         height: 0.25rem;
         border-radius: 999px;
@@ -167,73 +209,26 @@
     /* Tables ------------------------------------------------------------ */
 
     .table > thead th {
+        --bs-table-bg: var(--bs-tertiary-bg);
+
         font-size: 0.8125rem;
         font-weight: 600;
         color: var(--bs-secondary-color);
         white-space: nowrap;
     }
 
+    /* Tables look the same everywhere; on narrow screens they scroll sideways. */
     .table > tbody td {
         white-space: nowrap;
     }
 
-    /* Below 768px each row becomes a small card; td[data-label] supplies the label. */
-    @media (max-width: 767.98px) {
-        .table-stack > thead {
-            position: absolute;
-            width: 1px;
-            height: 1px;
-            overflow: hidden;
-            clip-path: inset(50%);
-        }
-
-        .table-stack,
-        .table-stack > tbody,
-        .table-stack > tbody > tr,
-        .table-stack > tbody > tr > td {
-            display: block;
-            width: 100%;
-        }
-
-        .table-stack > tbody > tr {
-            padding: 0.75rem 1rem;
-            border-bottom: 1px solid var(--bs-border-color);
-        }
-
-        .table-stack > tbody > tr > td {
-            display: flex;
-            justify-content: space-between;
-            gap: 1rem;
-            padding: 0.2rem 0;
-            border: 0;
-            box-shadow: none;
-            white-space: normal;
-            text-align: right;
-        }
-
-        .table-stack > tbody > tr > td[data-label]::before {
-            content: attr(data-label);
-            flex-shrink: 0;
-            font-size: 0.8125rem;
-            font-weight: 600;
-            color: var(--bs-secondary-color);
-            text-align: left;
-        }
-
-        .table-stack > tbody > tr > td.cell-actions {
-            justify-content: flex-end;
-            padding-top: 0.5rem;
-        }
-
-        .table-stack > tbody > tr > td[colspan] {
-            display: block;
-            text-align: center;
-        }
+    .table > tbody td[colspan] {
+        white-space: normal;
     }
 }
 
 /*
-| Cover page form: branded with the logo's blue, lavender and orange.
+| Cover page form and sign-in pages: always light, branded with the logo's blue, lavender and orange.
 */
 [data-bs-theme='light'] body.intake {
     background-color: #fff;
@@ -241,11 +236,6 @@
 
 @layer components {
     .intake {
-        --brand: #22609f;
-        --brand-dark: #194c80;
-        --lavender: #b49ccc;
-        --lavender-soft: #f3eff8;
-        --orange: #ee8a2c;
         --ink: #1d2733;
         --ink-soft: #5d6876;
         --line: #dbe1e8;
@@ -257,59 +247,8 @@
         color: var(--ink-soft);
     }
 
-    /* Header band */
-    .brand-band {
-        background-color: var(--brand);
-        background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cpath d='M26 19h4v7h7v4h-7v7h-4v-7h-7v-4h7z' fill='%23fff' fill-opacity='.045'/%3E%3C/svg%3E");
-        border-bottom: 4px solid var(--lavender);
-        color: #fff;
-    }
-
-    .brand-band-name {
-        display: flex;
-        align-items: center;
-        gap: 0.75rem;
-        color: #fff;
-        font-weight: 700;
-        line-height: 1.25;
-        text-decoration: none;
-    }
-
-    .brand-band-name:hover {
-        color: #fff;
-    }
-
-    .brand-band-name img {
-        width: 3rem;
-        height: 3rem;
-        flex-shrink: 0;
-        padding: 2px;
-        border-radius: 50%;
-        background: #fff;
-        object-fit: contain;
-    }
-
-    .brand-band-name small {
-        display: block;
-        font-weight: 400;
-        font-size: 0.8125rem;
-        color: #dcd0ea;
-    }
-
-    .btn-band {
-        --bs-btn-color: #fff;
-        --bs-btn-border-color: rgba(255, 255, 255, 0.6);
-        --bs-btn-hover-color: var(--brand);
-        --bs-btn-hover-bg: #fff;
-        --bs-btn-hover-border-color: #fff;
-        --bs-btn-active-color: var(--brand);
-        --bs-btn-active-bg: #fff;
-        --bs-btn-active-border-color: #fff;
-        --bs-btn-border-radius: 6px;
-    }
-
     /* Form */
-    .cover-form {
+    .brand-form {
         --bs-border-color: var(--line);
         --bs-body-bg: #f8fafc;
         --bs-border-radius: 8px;
@@ -336,43 +275,54 @@
         color: var(--orange);
     }
 
-    .cover-form .form-label {
+    .brand-form .form-label {
         margin-bottom: 0.35rem;
         font-size: 0.9rem;
         font-weight: 600;
     }
 
-    .cover-form .form-control,
-    .cover-form .form-select {
+    .brand-form .form-control,
+    .brand-form .form-select {
         padding-top: 0.6rem;
         padding-bottom: 0.6rem;
     }
 
-    .cover-form .form-control:focus,
-    .cover-form .form-select:focus {
+    .brand-form .form-control:focus,
+    .brand-form .form-select:focus {
         border-color: var(--brand);
         background-color: #fff;
         box-shadow: 0 0 0 3px rgba(180, 156, 204, 0.45);
     }
 
-    .cover-form .form-control[readonly] {
+    .brand-form .form-control[readonly] {
         border-style: dashed;
         background-color: var(--lavender-soft);
         color: var(--ink-soft);
     }
 
-    .cover-form.was-validated .form-control:valid,
-    .cover-form.was-validated .form-select:valid {
+    /* The forgot-password steps mark a step as validated, not the whole form. */
+    :is(.brand-form.was-validated, .brand-form .was-validated) :is(.form-control, .form-select):valid {
         border-color: var(--line);
         background-image: none;
     }
 
-    .cover-form.was-validated .form-control:valid {
+    :is(.brand-form.was-validated, .brand-form .was-validated) .form-control:valid {
         padding-right: 0.75rem;
     }
 
-    .cover-form.was-validated .form-select:valid {
+    :is(.brand-form.was-validated, .brand-form .was-validated) .form-select:valid {
         --bs-form-select-bg-icon: none;
+    }
+
+    .brand-form .input-group > .btn-outline-secondary {
+        --bs-btn-color: var(--ink-soft);
+        --bs-btn-border-color: var(--line);
+        --bs-btn-hover-color: var(--brand);
+        --bs-btn-hover-bg: var(--lavender-soft);
+        --bs-btn-hover-border-color: var(--line);
+        --bs-btn-active-color: var(--brand);
+        --bs-btn-active-bg: var(--lavender-soft);
+        --bs-btn-active-border-color: var(--line);
     }
 
     .form-actions {
@@ -410,6 +360,20 @@
         --bs-btn-border-color: transparent;
         --bs-btn-hover-border-color: transparent;
         --bs-btn-active-border-color: transparent;
+    }
+
+    /* Sign-in pages */
+    .auth-main {
+        background: var(--lavender-soft);
+    }
+
+    .auth-card {
+        padding: 2rem 1.5rem;
+        border: 1px solid var(--line);
+        border-top: 4px solid var(--brand);
+        border-radius: 12px;
+        background: #fff;
+        box-shadow: 0 10px 24px -14px rgba(34, 96, 159, 0.45);
     }
 
     /* Preview */

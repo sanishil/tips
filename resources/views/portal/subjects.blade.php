@@ -25,11 +25,11 @@
         <tbody>
             @forelse ($subjects as $subject)
                 <tr data-course="{{ $subject['course'] }}" data-sem="{{ $subject['sem'] }}">
-                    <td data-label="Code" class="font-monospace">{{ $subject['code'] }}</td>
-                    <td data-label="Subject" class="fw-semibold">{{ $subject['subjects'] }}</td>
-                    <td data-label="Semester">{{ $subject['sem'] }}</td>
-                    <td data-label="Course">{{ $subject['course'] }}</td>
-                    <td data-label="Department">{{ $subject['dept_name'] }}</td>
+                    <td class="font-monospace">{{ $subject['code'] }}</td>
+                    <td class="fw-semibold">{{ $subject['subjects'] }}</td>
+                    <td>{{ $subject['sem'] }}</td>
+                    <td>{{ $subject['course'] }}</td>
+                    <td>{{ $subject['dept_name'] }}</td>
                     <x-row-actions :record="\Illuminate\Support\Arr::except($subject, 'id')" :label="$subject['subjects']" edit="edit-subject" delete="delete-subject" />
                 </tr>
             @empty

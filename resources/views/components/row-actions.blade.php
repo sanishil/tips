@@ -1,6 +1,6 @@
 @props(['record', 'label', 'edit' => null, 'delete' => null])
 
-<td class="cell-actions text-end" data-export-skip>
+<td class="text-end" data-export-skip>
     <div class="d-inline-flex gap-1">
         {{ $slot }}
         @if ($edit)

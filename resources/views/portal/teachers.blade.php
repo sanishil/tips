@@ -19,9 +19,9 @@
         <tbody>
             @forelse ($teachers as $teacher)
                 <tr data-dept="{{ $teacher['dept_name'] }}">
-                    <td data-label="Name" class="fw-semibold">{{ $teacher['teacher'] }}</td>
-                    <td data-label="Designation">{{ $teacher['designation'] }}</td>
-                    <td data-label="Department">{{ $teacher['dept_name'] }}</td>
+                    <td class="fw-semibold">{{ $teacher['teacher'] }}</td>
+                    <td>{{ $teacher['designation'] }}</td>
+                    <td>{{ $teacher['dept_name'] }}</td>
                     <x-row-actions :record="\Illuminate\Support\Arr::except($teacher, 'id')" :label="$teacher['teacher']" edit="edit-teacher" delete="delete-teacher" />
                 </tr>
             @empty

@@ -11,17 +11,17 @@
             @forelse ($users as $user)
                 @php($record = ['name' => $user['name'], 'email' => $user['email'], 'type' => $user['type']])
                 <tr>
-                    <td data-label="Name" class="fw-semibold">{{ $user['name'] }}</td>
-                    <td data-label="Email" class="text-break">{{ $user['email'] }}</td>
-                    <td data-label="Role">{{ $user['type'] }}</td>
-                    <td data-label="Status">
+                    <td class="fw-semibold">{{ $user['name'] }}</td>
+                    <td class="text-break">{{ $user['email'] }}</td>
+                    <td>{{ $user['type'] }}</td>
+                    <td>
                         @if ($user['active'])
                             Active
                         @else
                             <span class="text-body-secondary">Deactivated</span>
                         @endif
                     </td>
-                    <td data-label="Last active" class="text-body-secondary">{{ $user['last_activity'] }}</td>
+                    <td class="text-body-secondary">{{ $user['last_activity'] }}</td>
                     <x-row-actions :record="$record" :label="$user['name']" edit="edit-user" delete="delete-user">
                         <button type="button" class="btn btn-sm btn-icon" data-bs-toggle="modal" data-bs-target="#reset-user" data-record="{{ json_encode($record) }}" aria-label="Send {{ $user['name'] }} a new password" title="Send new password">
                             <i class="fa-solid fa-key" aria-hidden="true"></i>
@@ -39,7 +39,7 @@
                 </tr>
             @empty
                 <x-empty-state colspan="6" title="No accounts yet" icon="fa-user">
-                    Create an account for each staff member or student coordinator who needs to sign in.
+                    Create an account for each admin or student coordinator who needs to sign in.
                 </x-empty-state>
             @endforelse
         </tbody>

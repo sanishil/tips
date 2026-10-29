@@ -16,9 +16,10 @@
     };
 @endphp
 
-<x-layouts.auth title="Staff sign in">
+<x-layouts.auth title="Sign in">
+    <p class="form-part-title mb-2"><i class="fa-solid fa-plus" aria-hidden="true"></i> Portal</p>
     <h1 class="h3 font-display mb-1">Sign in</h1>
-    <p class="text-body-secondary mb-4">For college staff and student coordinators.</p>
+    <p class="intake-muted mb-4">For admins and student coordinators.</p>
 
     @if ($errorMessage)
         <div class="alert alert-danger small" role="alert">{{ $errorMessage }}</div>

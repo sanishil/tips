@@ -16,13 +16,14 @@
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-department"><i class="fa-solid fa-plus me-1" aria-hidden="true"></i> Add department</button>
         </x-slot:actions>
         <thead>
-            <tr><th>Department</th><th>Head of department</th><th>Added</th><th class="text-end" data-export-skip><span class="visually-hidden">Actions</span></th></tr>
+            <tr><th>Department</th><th>Head of department</th><th class="text-end">Teachers</th><th>Added</th><th class="text-end" data-export-skip><span class="visually-hidden">Actions</span></th></tr>
         </thead>
         <tbody>
             @forelse ($departments as $department)
                 <tr>
                     <td class="fw-semibold">{{ $department->dept_name }}</td>
                     <td>{{ $department->hod }}</td>
+                    <td class="text-end">{{ $department->teachers_count }}</td>
                     <td class="text-body-secondary" data-export="{{ $department->created_at->toDateString() }}">{{ $department->created_at->format('j M Y') }}</td>
                     <x-row-actions
                         :record="['department_id' => $department->id, 'dept_name' => $department->dept_name, 'hod' => $department->hod]"
@@ -34,7 +35,7 @@
                     />
                 </tr>
             @empty
-                <x-empty-state colspan="4" title="No departments yet" icon="fa-building" />
+                <x-empty-state colspan="5" title="No departments yet" icon="fa-building" />
             @endforelse
         </tbody>
     </x-table-card>
@@ -67,6 +68,6 @@
     </x-modal>
 
     <x-modal id="delete-department" title="Delete this department?" submit="Delete" busy="Deleting…" danger :action="route($portal.'.departments')" method="DELETE">
-        <p class="mb-0"><strong data-record-text="dept_name"></strong> will be removed. This can't be undone.</p>
+        <p class="mb-0"><strong data-record-text="dept_name"></strong> will be removed. This can't be undone. A department that still has teachers can't be deleted.</p>
     </x-modal>
 </x-layouts.portal>

@@ -35,5 +35,8 @@
         @if (session('status'))
             <template data-toast="success">{{ session('status') }}</template>
         @endif
+        @if (session('error'))
+            <template data-toast="error">{{ session('error') }}</template>
+        @endif
     </body>
 </html>

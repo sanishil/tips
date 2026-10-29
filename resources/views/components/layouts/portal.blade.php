@@ -5,6 +5,7 @@
         ['route' => 'dashboard', 'label' => 'Dashboard', 'icon' => 'fa-gauge'],
         ['route' => 'students', 'label' => 'Students', 'icon' => 'fa-user-graduate'],
         ['route' => 'departments', 'label' => 'Departments', 'icon' => 'fa-building-columns'],
+        ['route' => 'designations', 'label' => 'Designations', 'icon' => 'fa-id-badge'],
         ['route' => 'subjects', 'label' => 'Subjects', 'icon' => 'fa-book'],
         ['route' => 'teachers', 'label' => 'Teachers', 'icon' => 'fa-chalkboard-user'],
     ];

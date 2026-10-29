@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Portal\DepartmentController;
+use App\Http\Controllers\Portal\DesignationController;
+use App\Http\Controllers\Portal\TeacherController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -59,7 +61,18 @@ foreach (['admin', 'tech'] as $portal) {
             Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
         });
         Route::view('/subjects', 'portal.subjects', $shared + ['subjects' => []])->name('subjects');
-        Route::view('/teachers', 'portal.teachers', $shared + ['teachers' => []])->name('teachers');
+        Route::get('/designations', [DesignationController::class, 'index'])->name('designations');
+        Route::middleware('throttle:30,1')->group(function () {
+            Route::post('/designations', [DesignationController::class, 'store'])->name('designations.store');
+            Route::put('/designations/{designation}', [DesignationController::class, 'update'])->name('designations.update');
+            Route::delete('/designations/{designation}', [DesignationController::class, 'destroy'])->name('designations.destroy');
+        });
+        Route::get('/teachers', [TeacherController::class, 'index'])->name('teachers');
+        Route::middleware('throttle:30,1')->group(function () {
+            Route::post('/teachers', [TeacherController::class, 'store'])->name('teachers.store');
+            Route::put('/teachers/{teacher}', [TeacherController::class, 'update'])->name('teachers.update');
+            Route::delete('/teachers/{teacher}', [TeacherController::class, 'destroy'])->name('teachers.destroy');
+        });
         Route::view('/profile', 'portal.profile', $shared)->name('profile');
 
         if ($portal === 'admin') {

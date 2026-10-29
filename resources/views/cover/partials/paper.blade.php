@@ -6,10 +6,7 @@
 <div id="contentToPrint" data-bs-theme="light" class="cover-paper bg-white text-dark shadow tw:@container tw:aspect-[210/297] tw:font-serif">
     <div class="d-flex flex-column text-center h-100 tw:p-[7cqw]">
         <div class="d-flex flex-column h-100 tw:border-[0.4cqw] tw:border-solid tw:border-[#0f5c5e] tw:p-[5cqw]">
-            <svg class="mx-auto tw:size-[13cqw]" viewBox="0 0 32 32" aria-hidden="true">
-                <rect width="32" height="32" rx="6" fill="#0f5c5e" />
-                <path d="M13 6.5h6v6.5h6.5v6H19v6.5h-6V19H6.5v-6H13z" fill="#fff" />
-            </svg>
+            <img class="mx-auto tw:size-[13cqw]" src="{{ asset('img/logo.webp') }}" alt="" aria-hidden="true">
             <p class="fw-bold text-uppercase mb-0 tw:mt-[3cqw] tw:text-[4.2cqw] tw:leading-tight tw:tracking-wide">Tripura Institute of Paramedical Sciences</p>
 
             <div class="tw:my-[6cqw] tw:h-[0.3cqw] tw:w-[20cqw] mx-auto tw:bg-[#0f5c5e]"></div>

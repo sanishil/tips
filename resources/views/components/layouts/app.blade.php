@@ -1,4 +1,4 @@
-@props(['title' => null])
+@props(['title' => null, 'themeable' => true])
 
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" data-bs-theme="light">
@@ -11,17 +11,18 @@
 
         <title>{{ $title ? $title.' — ' : '' }}{{ config('app.name') }}</title>
 
-        <link rel="icon" href="{{ asset('favicon.svg') }}" type="image/svg+xml">
-        <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
-        <link rel="apple-touch-icon" href="{{ asset('apple-touch-icon.png') }}">
+        <link rel="icon" href="{{ asset('img/logo.webp') }}" type="image/webp">
+        <link rel="apple-touch-icon" href="{{ asset('img/logo.webp') }}">
 
-        <script>
-            try {
-                if (localStorage.getItem('tips_theme') === 'dark') {
-                    document.documentElement.setAttribute('data-bs-theme', 'dark');
-                }
-            } catch (e) {}
-        </script>
+        @if ($themeable)
+            <script>
+                try {
+                    if (localStorage.getItem('tips_theme') === 'dark') {
+                        document.documentElement.setAttribute('data-bs-theme', 'dark');
+                    }
+                } catch (e) {}
+            </script>
+        @endif
 
         @fonts
         @vite(['resources/css/bootstrap.scss', 'resources/css/app.css', 'resources/js/app.js'])

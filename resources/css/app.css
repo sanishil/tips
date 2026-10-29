@@ -36,6 +36,8 @@
         width: 2.25rem;
         height: 2.25rem;
         flex-shrink: 0;
+        object-fit: contain;
+        border-radius: 6px;
     }
 
     /* Sidebar ----------------------------------------------------------- */

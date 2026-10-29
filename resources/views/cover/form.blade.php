@@ -1,9 +1,8 @@
-<x-layouts.app title="Assignment cover page" class="d-flex flex-column min-vh-100">
+<x-layouts.app title="Assignment cover page" :themeable="false" class="d-flex flex-column min-vh-100">
     <header class="bg-body border-bottom">
         <div class="container-xl d-flex align-items-center justify-content-between gap-3 py-2">
             <a href="{{ route('cover.form') }}" class="text-decoration-none"><x-brand /></a>
             <div class="d-flex align-items-center gap-1 flex-shrink-0">
-                <x-theme-toggle />
                 <a href="{{ route('login') }}" class="btn btn-sm btn-outline-secondary">Staff sign in</a>
             </div>
         </div>

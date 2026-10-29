@@ -119,11 +119,35 @@ if (intro) {
     playIntro();
 }
 
+/* Portal sidebar --------------------------------------------------------- */
+
+const SIDEBAR_KEY = 'tips_sidebar';
+const desktopWidth = window.matchMedia('(min-width: 992px)');
+
+/* Desktop: fold the sidebar to icons and remember it. Smaller screens: open or close the slide-in panel. */
+function toggleSidebar(button) {
+    if (!desktopWidth.matches) {
+        bootstrap.Offcanvas.getOrCreateInstance(document.getElementById('sidebar')).toggle();
+        return;
+    }
+
+    const collapsed = document.documentElement.classList.toggle('sidebar-collapsed');
+    button.setAttribute('aria-expanded', String(!collapsed));
+
+    try {
+        localStorage.setItem(SIDEBAR_KEY, collapsed ? 'collapsed' : 'open');
+    } catch (e) {}
+}
+
+document.querySelectorAll('[data-sidebar-toggle]').forEach((button) => {
+    button.setAttribute('aria-expanded', String(!document.documentElement.classList.contains('sidebar-collapsed')));
+});
+
 /* Click actions ---------------------------------------------------------- */
 
 document.addEventListener('click', (event) => {
     const target = event.target.closest(
-        '[data-intro-replay], [data-theme-toggle], [data-password-toggle], [data-recaptcha-reset], [data-export-table], [data-table-clear]',
+        '[data-intro-replay], [data-sidebar-toggle], [data-theme-toggle], [data-password-toggle], [data-recaptcha-reset], [data-export-table], [data-table-clear]',
     );
 
     if (!target) {
@@ -135,6 +159,10 @@ document.addEventListener('click', (event) => {
         event.preventDefault();
         window.scrollTo({ top: 0 });
         playIntro();
+    }
+
+    if (target.matches('[data-sidebar-toggle]')) {
+        toggleSidebar(target);
     }
 
     if (target.matches('[data-theme-toggle]')) {
@@ -399,7 +427,9 @@ function exportTable(tableId, name = 'export') {
     const csv = [header, ...rows].map((row) => row.map(escape).join(',')).join('\r\n');
     const link = document.createElement('a');
     link.href = URL.createObjectURL(new Blob([`﻿${csv}`], { type: 'text/csv;charset=utf-8' }));
-    link.download = `${name}-${new Date().toISOString().slice(0, 10)}.csv`;
+    /* Today's date in IST (en-CA formats as YYYY-MM-DD); toISOString would give the UTC date before 5:30 am. */
+    const today = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Kolkata' }).format(new Date());
+    link.download = `${name}-${today}.csv`;
     link.click();
     URL.revokeObjectURL(link.href);
 

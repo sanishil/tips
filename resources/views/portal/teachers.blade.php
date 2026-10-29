@@ -1,9 +1,10 @@
 <x-layouts.portal :portal="$portal" title="Teachers">
-    <x-page-header title="Teachers" subtitle="Students pick from this list under “Submitted to”.">
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-teacher"><i class="fa-solid fa-user-plus me-1" aria-hidden="true"></i> Add teacher</button>
-    </x-page-header>
+    <x-page-header title="Teachers" subtitle="Students pick from this list under “Submitted to”." />
 
     <x-table-card id="teachers-table" title="All teachers" :count="count($teachers)" placeholder="Search teachers">
+        <x-slot:actions>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-teacher"><i class="fa-solid fa-user-plus me-1" aria-hidden="true"></i> Add teacher</button>
+        </x-slot:actions>
         <x-slot:filters>
             <select class="form-select form-select-sm tw:sm:w-auto" aria-label="Department" data-table-filter="teachers-table" data-filter-key="dept">
                 <option value="">All departments</option>
@@ -43,7 +44,7 @@
                 <div class="col-sm-6">
                     <label class="form-label" for="{{ $mode }}_designation">Designation</label>
                     <select id="{{ $mode }}_designation" name="designation" class="form-select" required>
-                        @foreach ($options['designations'] as $designation)
+                        @foreach ($options['designations'] ?? [] as $designation)
                             <option>{{ $designation }}</option>
                         @endforeach
                     </select>

@@ -1,13 +1,14 @@
 <x-layouts.portal :portal="$portal" title="Students">
-    <x-page-header title="Students" subtitle="A record is created the first time a student prints a cover page.">
-        @if ($students)
-            <button type="button" class="btn btn-info" data-export-table="students-table" data-export-name="students">
-                <i class="fa-solid fa-file-csv me-1" aria-hidden="true"></i> Export CSV
-            </button>
-        @endif
-    </x-page-header>
+    <x-page-header title="Students" subtitle="A record is created the first time a student prints a cover page." />
 
     <x-table-card id="students-table" title="Student records" :count="count($students)" placeholder="Search ID, name or subject">
+        <x-slot:actions>
+            @if ($students)
+                <button type="button" class="btn btn-info" data-export-table="students-table" data-export-name="students">
+                    <i class="fa-solid fa-file-csv me-1" aria-hidden="true"></i> Export CSV
+                </button>
+            @endif
+        </x-slot:actions>
         <x-slot:filters>
             <select class="form-select form-select-sm tw:sm:w-auto" aria-label="Department" data-table-filter="students-table" data-filter-key="dept">
                 <option value="">All departments</option>

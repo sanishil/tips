@@ -1,19 +1,20 @@
 <x-layouts.portal :portal="$portal" title="Subjects">
-    <x-page-header title="Subjects" subtitle="Students only see the subjects for their own department, course and semester.">
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-subject"><i class="fa-solid fa-plus me-1" aria-hidden="true"></i> Add subject</button>
-    </x-page-header>
+    <x-page-header title="Subjects" subtitle="Students only see the subjects for their own department, course and semester." />
 
     <x-table-card id="subjects-table" title="All subjects" :count="count($subjects)" placeholder="Search name or code">
+        <x-slot:actions>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-subject"><i class="fa-solid fa-plus me-1" aria-hidden="true"></i> Add subject</button>
+        </x-slot:actions>
         <x-slot:filters>
             <select class="form-select form-select-sm tw:sm:w-auto" aria-label="Course" data-table-filter="subjects-table" data-filter-key="course">
                 <option value="">All courses</option>
-                @foreach ($options['courses'] as $course)
+                @foreach ($options['courses'] ?? [] as $course)
                     <option>{{ $course }}</option>
                 @endforeach
             </select>
             <select class="form-select form-select-sm tw:sm:w-auto" aria-label="Semester" data-table-filter="subjects-table" data-filter-key="sem">
                 <option value="">All semesters</option>
-                @foreach ($options['semesters'] as $semester)
+                @foreach ($options['semesters'] ?? [] as $semester)
                     <option>{{ $semester }}</option>
                 @endforeach
             </select>
@@ -56,7 +57,7 @@
                 <div class="col-sm-4">
                     <label class="form-label" for="{{ $mode }}_course">Course</label>
                     <select id="{{ $mode }}_course" name="course" class="form-select" required>
-                        @foreach ($options['courses'] as $course)
+                        @foreach ($options['courses'] ?? [] as $course)
                             <option>{{ $course }}</option>
                         @endforeach
                     </select>
@@ -64,7 +65,7 @@
                 <div class="col-sm-4">
                     <label class="form-label" for="{{ $mode }}_sem">Semester</label>
                     <select id="{{ $mode }}_sem" name="sem" class="form-select" required>
-                        @foreach ($options['semesters'] as $semester)
+                        @foreach ($options['semesters'] ?? [] as $semester)
                             <option>{{ $semester }}</option>
                         @endforeach
                     </select>

@@ -6,7 +6,7 @@
     <x-page-header title="Signed in now" subtitle="Anyone active in the last 10 minutes. An account can only be signed in on one device at a time." />
 
     @if ($online)
-        <div class="card shadow-sm">
+        <div class="card">
             <ul class="list-group list-group-flush">
                 @foreach ($online as $user)
                     <li class="list-group-item d-flex align-items-center gap-3 py-3">
@@ -23,7 +23,7 @@
             </ul>
         </div>
     @else
-        <div class="card shadow-sm">
+        <div class="card">
             <x-empty-state icon="fa-moon" title="Nobody else is signed in">
                 This list updates when you reload the page.
             </x-empty-state>

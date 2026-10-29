@@ -44,7 +44,7 @@
                             <div class="col-4 col-sm-3">
                                 <label class="form-label" for="title">Title</label>
                                 <select id="title" name="title" class="form-select" data-preview="title">
-                                    @foreach ($options['titles'] as $title)
+                                    @foreach ($options['titles'] ?? [] as $title)
                                         <option>{{ $title }}</option>
                                     @endforeach
                                 </select>
@@ -74,7 +74,7 @@
                                 <label class="form-label" for="course">Course</label>
                                 <select id="course" name="course" class="form-select" required data-preview="course">
                                     <option value="">Choose…</option>
-                                    @foreach ($options['courses'] as $course)
+                                    @foreach ($options['courses'] ?? [] as $course)
                                         <option>{{ $course }}</option>
                                     @endforeach
                                 </select>
@@ -84,7 +84,7 @@
                                 <label class="form-label" for="sem">Semester</label>
                                 <select id="sem" name="sem" class="form-select" required data-preview="sem">
                                     <option value="">Choose…</option>
-                                    @foreach ($options['semesters'] as $semester)
+                                    @foreach ($options['semesters'] ?? [] as $semester)
                                         <option>{{ $semester }}</option>
                                     @endforeach
                                 </select>
@@ -93,7 +93,7 @@
                             <div class="col-6 col-sm-4">
                                 <label class="form-label" for="section">Section</label>
                                 <select id="section" name="section" class="form-select" data-preview="section">
-                                    @foreach ($options['sections'] as $section)
+                                    @foreach ($options['sections'] ?? [] as $section)
                                         <option>{{ $section }}</option>
                                     @endforeach
                                 </select>
@@ -110,7 +110,7 @@
                                 <label class="form-label" for="ward">Ward <span class="intake-muted fw-normal">(optional)</span></label>
                                 <input id="ward" name="ward" class="form-control" list="ward-list" autocomplete="off" data-preview="ward" placeholder="Choose or type a ward">
                                 <datalist id="ward-list">
-                                    @foreach ($options['wards'] as $ward)
+                                    @foreach ($options['wards'] ?? [] as $ward)
                                         <option value="{{ $ward }}"></option>
                                     @endforeach
                                 </datalist>
@@ -133,7 +133,7 @@
                             <div class="col-sm-6">
                                 <label class="form-label" for="page_type">This is a…</label>
                                 <select id="page_type" name="page_type" class="form-select" data-preview="page_type">
-                                    @foreach ($options['pageTypes'] as $pageType)
+                                    @foreach ($options['pageTypes'] ?? [] as $pageType)
                                         <option>{{ $pageType }}</option>
                                     @endforeach
                                 </select>
@@ -173,7 +173,7 @@
                                 <label class="form-label" for="f_designation">Designation</label>
                                 <input id="f_designation" name="f_designation" class="form-control" list="designation-list" autocomplete="off" required data-preview="f_designation">
                                 <datalist id="designation-list">
-                                    @foreach ($options['designations'] as $designation)
+                                    @foreach ($options['designations'] ?? [] as $designation)
                                         <option value="{{ $designation }}"></option>
                                     @endforeach
                                 </datalist>

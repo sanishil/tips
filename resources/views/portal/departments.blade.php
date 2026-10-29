@@ -1,9 +1,10 @@
 <x-layouts.portal :portal="$portal" title="Departments">
-    <x-page-header title="Departments" subtitle="Subjects, teachers and students all belong to a department.">
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-department"><i class="fa-solid fa-plus me-1" aria-hidden="true"></i> Add department</button>
-    </x-page-header>
+    <x-page-header title="Departments" subtitle="Subjects, teachers and students all belong to a department." />
 
     <x-table-card id="departments-table" title="All departments" :count="count($departments)" placeholder="Search departments">
+        <x-slot:actions>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-department"><i class="fa-solid fa-plus me-1" aria-hidden="true"></i> Add department</button>
+        </x-slot:actions>
         <thead>
             <tr><th>Department</th><th>Head of department</th><th class="text-end">Students</th><th class="text-end">Teachers</th><th class="text-end">Subjects</th><th class="text-end" data-export-skip><span class="visually-hidden">Actions</span></th></tr>
         </thead>

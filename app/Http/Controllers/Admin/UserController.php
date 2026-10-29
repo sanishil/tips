@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Enums\UserRole;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use App\Support\DemoData;
 use App\Support\EmailedPasswordAccount;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
@@ -24,8 +23,6 @@ class UserController extends Controller
     {
         return view('portal.users', [
             'portal' => 'admin',
-            'options' => DemoData::options(),
-            'departments' => DemoData::departments(),
             'users' => User::orderBy('name')->get(),
         ]);
     }

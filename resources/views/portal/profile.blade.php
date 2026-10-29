@@ -7,7 +7,7 @@
 
     <div class="row g-4">
         <div class="col-lg-4">
-            <section class="card shadow-sm" aria-labelledby="photo-heading">
+            <section class="card" aria-labelledby="photo-heading">
                 <div class="card-body p-4 d-flex flex-column align-items-center text-center">
                     <h2 id="photo-heading" class="visually-hidden">Photo</h2>
                     <span class="avatar tw:size-24! tw:text-2xl!" data-photo-preview>{{ $user->initials }}</span>
@@ -24,7 +24,7 @@
         </div>
 
         <div class="col-lg-8 vstack gap-4">
-            <form method="POST" class="card shadow-sm" data-demo-form="Your details are saved." novalidate aria-labelledby="details-heading">
+            <form method="POST" class="card" data-demo-form="Your details are saved." novalidate aria-labelledby="details-heading">
                 @csrf
                 <div class="card-header py-3"><h2 id="details-heading" class="h6 mb-0">Your details</h2></div>
                 <div class="card-body">
@@ -44,7 +44,7 @@
                 <div class="card-footer text-end"><button type="submit" class="btn btn-success"><i class="fa-solid fa-floppy-disk me-1" aria-hidden="true"></i> Save</button></div>
             </form>
 
-            <form method="POST" class="card shadow-sm" data-demo-form="Password changed. You've been signed out on other devices." novalidate aria-labelledby="password-heading">
+            <form method="POST" class="card" data-demo-form="Password changed. You've been signed out on other devices." novalidate aria-labelledby="password-heading">
                 @csrf
                 <div class="card-header py-3"><h2 id="password-heading" class="h6 mb-0">Change password</h2></div>
                 <div class="card-body">

@@ -1,8 +1,7 @@
 <x-layouts.auth title="Reset your password">
     <x-auth-steps :steps="$steps" :current="1" />
 
-    <h1 class="h3 font-display mb-1">Reset your password</h1>
-    <p class="intake-muted mb-4">Enter the email you sign in with and we'll send you a 6-digit code.</p>
+    <h1 class="h3 font-display mb-4">Reset your password</h1>
 
     <form method="POST" action="{{ route('password.request') }}" class="vstack gap-3" novalidate>
         @csrf

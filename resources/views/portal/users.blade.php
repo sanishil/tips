@@ -7,11 +7,12 @@
 @endphp
 
 <x-layouts.portal :portal="$portal" title="User accounts">
-    <x-page-header title="User accounts" subtitle="Students sign themselves up. Create tech and admin accounts here; the password goes to them by email.">
-        <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-user"><i class="fa-solid fa-user-plus me-1" aria-hidden="true"></i> Create account</button>
-    </x-page-header>
+    <x-page-header title="User accounts" subtitle="Students sign themselves up. Create tech and admin accounts here; the password goes to them by email." />
 
     <x-table-card id="users-table" title="All accounts" :count="$users->count()" placeholder="Search name or email">
+        <x-slot:actions>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-user"><i class="fa-solid fa-user-plus me-1" aria-hidden="true"></i> Create account</button>
+        </x-slot:actions>
         <thead>
             <tr><th>Name</th><th>Email</th><th>Role</th><th>Status</th><th>Joined</th><th data-export-skip><span class="visually-hidden">Actions</span></th></tr>
         </thead>
@@ -21,8 +22,8 @@
                 <tr>
                     <td class="fw-semibold">{{ $user->name }}</td>
                     <td class="text-break">{{ $user->email }}</td>
-                    <td>{{ $user->role->label() }}</td>
-                    <td @class(['text-body-secondary' => $user->must_change_password])>{{ $statusLabel($user) }}</td>
+                    <td><span class="pill pill-info">{{ $user->role->label() }}</span></td>
+                    <td data-export="{{ $statusLabel($user) }}"><span class="pill {{ $user->must_change_password ? 'pill-warning' : 'pill-success' }}">{{ $statusLabel($user) }}</span></td>
                     <td class="text-body-secondary" data-export="{{ $user->created_at->toDateString() }}">{{ $user->created_at->diffForHumans() }}</td>
                     <x-row-actions :record="$record" :label="$user->name" edit="edit-user" delete="delete-user">
                         <button type="button" class="btn btn-sm btn-icon btn-icon-warning" data-bs-toggle="modal" data-bs-target="#reset-user" data-record="{{ json_encode($record) }}" aria-label="Send {{ $user->name }} a new password" title="Send new password">

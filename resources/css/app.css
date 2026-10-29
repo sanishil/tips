@@ -26,6 +26,37 @@
     background-color: #11161c;
 }
 
+/*
+| Page changes fade instead of flashing white (cross-document view transitions, Chrome and Edge 126+).
+| In the portal the banner, sidebar and top bar are named so they hold still while only the content fades.
+*/
+@view-transition {
+    navigation: auto;
+}
+
+::view-transition-old(root),
+::view-transition-new(root) {
+    animation-duration: 0.18s;
+}
+
+.portal-banner {
+    view-transition-name: portal-banner;
+}
+
+.portal-sidebar {
+    view-transition-name: portal-sidebar;
+}
+
+.portal-topbar {
+    view-transition-name: portal-topbar;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    @view-transition {
+        navigation: none;
+    }
+}
+
 /* Brand colours, taken from the logo. */
 :root {
     --brand: #22609f;
@@ -54,106 +85,477 @@
         border-radius: 6px;
     }
 
-    /* Menu panel: opened from the header's Menu button on every screen size. */
-
-    .sidebar {
-        --bs-offcanvas-width: 18rem;
+    /*
+    | Portal: institute banner, navy sidebar with an "Admin / Control panel" block and capitalised
+    | menu, a white top bar with the page title and sign-out, then white cards on a grey page.
+    | The sidebar folds to icons on desktop (html.sidebar-collapsed) and slides in below 992px.
+    */
+    .portal {
+        --portal-navy: #123a5e;
+        --portal-table-head: #1f3361;
+        --portal-icon: #f7b733;
+        --portal-card-line: #dbe5ee;
     }
 
-    .sidebar-brand {
+    .portal .font-display {
+        font-family: inherit;
+        font-weight: 700;
+        letter-spacing: 0;
+    }
+
+    .portal-banner {
         display: flex;
         align-items: center;
-        gap: 0.75rem;
-        color: var(--bs-emphasis-color);
-        font-family: 'Source Serif 4', Georgia, 'Times New Roman', serif;
-        font-weight: 600;
-        line-height: 1.2;
+        gap: 1rem;
+        padding: 0.75rem 1rem;
+        border-bottom: 1px solid var(--portal-card-line);
+        background: #fff;
+    }
+
+    .portal-banner-brand {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        min-width: 0;
+        color: inherit;
         text-decoration: none;
     }
 
-    .sidebar-brand:hover {
-        color: var(--bs-emphasis-color);
-    }
-
-    .sidebar-brand img {
-        width: 2.5rem;
-        height: 2.5rem;
+    .portal-banner-brand img {
+        width: 3.25rem;
+        height: 3.25rem;
         flex-shrink: 0;
-        border-radius: 50%;
         object-fit: contain;
     }
 
-    .sidebar-brand small {
+    .portal-banner-name {
         display: block;
-        font-family: var(--bs-body-font-family);
-        font-size: 0.8125rem;
-        font-weight: 400;
-        color: var(--bs-secondary-color);
-    }
-
-    .sidebar .nav-heading {
-        margin: 1.25rem 0 0.35rem;
-        padding: 0 0.75rem;
-        font-size: 0.7rem;
+        font-size: 1.05rem;
         font-weight: 700;
-        letter-spacing: 0.08em;
+        line-height: 1.15;
         text-transform: uppercase;
-        color: var(--bs-secondary-color);
+        color: var(--brand-dark);
     }
 
-    .sidebar .nav-link {
+    .portal-banner-tagline {
+        display: block;
+        margin-top: 0.2rem;
+        font-size: 0.875rem;
+        color: var(--ink-soft);
+    }
+
+    .portal-banner-date {
+        margin-left: auto;
+        font-size: 0.875rem;
+        color: var(--ink-soft);
+        white-space: nowrap;
+    }
+
+    @media (min-width: 768px) {
+        .portal-banner {
+            padding: 1rem 2rem;
+        }
+
+        .portal-banner-brand img {
+            width: 4.5rem;
+            height: 4.5rem;
+        }
+
+        .portal-banner-name {
+            font-size: 1.75rem;
+            letter-spacing: 0.01em;
+        }
+
+        .portal-banner-tagline {
+            font-size: 1rem;
+        }
+    }
+
+    .portal-shell {
+        display: flex;
+        min-height: 100vh;
+    }
+
+    .portal-sidebar {
+        --bs-offcanvas-width: 17rem;
+        --sidebar-line: rgba(255, 255, 255, 0.12);
+    }
+
+    .portal-sidebar-inner {
+        display: flex;
+        flex-direction: column;
+        width: 100%;
+        height: 100%;
+        background: var(--portal-navy);
+        color: rgba(255, 255, 255, 0.92);
+    }
+
+    .portal-sidebar-brand {
+        display: flex;
+        align-items: center;
+        gap: 0.85rem;
+        padding: 1.25rem 1.25rem 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--sidebar-line);
+    }
+
+    .portal-sidebar-brand img {
+        width: 3rem;
+        height: 3rem;
+        flex-shrink: 0;
+        padding: 3px;
+        border-radius: 0.5rem;
+        background: #fff;
+        object-fit: contain;
+    }
+
+    .portal-sidebar-brand strong {
+        display: block;
+        font-size: 1.15rem;
+        line-height: 1.2;
+        color: #fff;
+    }
+
+    .portal-sidebar-brand small {
+        display: block;
+        font-size: 0.85rem;
+        color: rgba(255, 255, 255, 0.7);
+    }
+
+    .portal-sidebar .nav-link {
+        display: flex;
+        align-items: center;
+        gap: 0.9rem;
+        padding: 0.8rem 1.5rem;
+        border: 0;
+        border-left: 4px solid transparent;
+        background: none;
+        font-size: 0.9375rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: rgba(255, 255, 255, 0.92);
+        white-space: nowrap;
+    }
+
+    .portal-sidebar .nav-link i {
+        font-size: 1.05rem;
+        color: var(--portal-icon);
+    }
+
+    .portal-sidebar .nav-link:hover,
+    .portal-sidebar .nav-link:focus-visible {
+        background: rgba(255, 255, 255, 0.07);
+        color: #fff;
+    }
+
+    .portal-sidebar .nav-link.active {
+        border-left-color: var(--portal-icon);
+        background: rgba(255, 255, 255, 0.13);
+        color: #fff;
+    }
+
+    @media (min-width: 992px) {
+        .portal-sidebar {
+            position: sticky;
+            top: 0;
+            flex-shrink: 0;
+            width: 17rem;
+            height: 100vh;
+            transition: width 0.2s ease;
+        }
+
+        /* Folded: icons only; the link titles act as tooltips. */
+        .sidebar-collapsed .portal-sidebar {
+            width: 4.75rem;
+        }
+
+        .sidebar-collapsed .portal-sidebar .nav-label {
+            display: none;
+        }
+
+        .sidebar-collapsed .portal-sidebar-brand {
+            justify-content: center;
+            padding-inline: 0;
+        }
+
+        .sidebar-collapsed .portal-sidebar .nav-link {
+            justify-content: center;
+            padding-inline: 0;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .portal-sidebar {
+            transition: none;
+        }
+    }
+
+    .portal-content {
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        min-width: 0;
+    }
+
+    .portal-topbar {
+        position: sticky;
+        top: 0;
+        z-index: 1020;
         display: flex;
         align-items: center;
         gap: 0.75rem;
-        padding: 0.5rem 0.75rem;
-        border-radius: var(--bs-border-radius);
-        color: var(--bs-body-color);
+        min-height: 4.25rem;
+        padding: 0.5rem 1rem;
+        border-bottom: 2px solid var(--brand);
+        background: #fff;
     }
 
-    .sidebar .nav-link i {
-        width: 1rem;
-        text-align: center;
-        color: var(--bs-secondary-color);
+    .portal-title {
+        min-width: 0;
+        margin: 0;
+        overflow: hidden;
+        font-size: 1.125rem;
+        font-weight: 700;
+        color: var(--ink);
+        white-space: nowrap;
+        text-overflow: ellipsis;
     }
 
-    .sidebar .nav-link:hover {
-        background: var(--bs-tertiary-bg);
+    .portal-topbar .avatar {
+        width: 2.5rem;
+        height: 2.5rem;
+        background: var(--portal-navy);
+        color: #fff;
     }
 
-    .sidebar .nav-link.active {
-        background: var(--bs-primary-bg-subtle);
-        color: var(--brand-text);
-        font-weight: 600;
-        box-shadow: inset 3px 0 0 var(--orange);
+    .portal-main {
+        flex-grow: 1;
+        width: 100%;
+        padding: 1.5rem 1rem;
     }
 
-    .sidebar .nav-link.active i {
-        color: var(--orange);
+    @media (min-width: 992px) {
+        .portal-topbar {
+            padding-inline: 1.25rem 2rem;
+        }
+
+        .portal-main {
+            padding: 2.5rem 3rem;
+        }
     }
 
-    /* Portal pages ------------------------------------------------------ */
+    .page-note {
+        margin-bottom: 1.25rem;
+        color: var(--ink-soft);
+    }
+
+    /* Cards: white, rounded, a light edge; titles bold in navy. */
+    .portal .card {
+        --bs-card-bg: #fff;
+        --bs-card-border-color: var(--portal-card-line);
+        --bs-card-border-radius: 0.75rem;
+        --bs-card-inner-border-radius: calc(0.75rem - 1px);
+        --bs-card-cap-bg: #fff;
+        --bs-card-cap-padding-x: 1.75rem;
+        --bs-card-cap-padding-y: 1.5rem;
+
+        box-shadow: 0 2px 10px rgba(18, 58, 94, 0.05);
+    }
+
+    .portal .card-header {
+        border-bottom: 0;
+    }
 
     .portal .card-header h2 {
+        font-size: 1.25rem;
         font-weight: 700;
-        color: var(--brand-text);
+        color: var(--portal-navy);
     }
 
-    .stat-card {
-        flex-direction: row;
-        align-items: center;
-        gap: 1rem;
-        padding: 1rem 1.25rem;
+    .portal .card-header :is(a, .btn-link) {
+        font-size: 0.875rem;
+        font-weight: 600;
     }
 
-    .stat-icon {
+    .portal .card-footer {
+        padding: 1rem 1.75rem;
+        border-top: 0;
+        background: #fff;
+    }
+
+    .portal .table-search {
+        --bs-border-color: var(--portal-card-line);
+    }
+
+    .portal .table-search .input-group-text {
+        background: #fff;
+        color: var(--brand);
+    }
+
+    /* Tables sit inside the card with a dark heading band, like the reference panel. */
+    .portal .table-card .table-responsive {
+        margin: 0 1.75rem;
+        border-radius: 0.375rem;
+    }
+
+    .portal .table-card .card-footer {
+        padding-top: 1rem;
+    }
+
+    .portal .table-card:not(:has(.card-footer)) .table-responsive {
+        margin-bottom: 1.75rem;
+    }
+
+    .portal .table > thead th {
+        --bs-table-bg: var(--portal-table-head);
+
+        padding-top: 0.95rem;
+        padding-bottom: 0.95rem;
+        border-right: 1px solid rgba(255, 255, 255, 0.14);
+        font-size: 0.9375rem;
+        font-weight: 700;
+        color: #fff;
+    }
+
+    .portal .table > thead th:last-child {
+        border-right: 0;
+    }
+
+    .portal .table > tbody td {
+        padding-top: 0.9rem;
+        padding-bottom: 0.9rem;
+    }
+
+    .portal .table > tfoot td {
+        border-bottom: 0;
+        font-weight: 700;
+    }
+
+    /* Small rounded status labels: Active, Waiting…, role names. */
+    .pill {
+        display: inline-block;
+        padding: 0.3rem 0.7rem;
+        border-radius: 0.4rem;
+        font-size: 0.875rem;
+        font-weight: 600;
+        line-height: 1.2;
+        white-space: nowrap;
+    }
+
+    .pill-success {
+        background: #d9f5e3;
+        color: #157347;
+    }
+
+    .pill-warning {
+        background: #fff1cc;
+        color: #8a5a00;
+    }
+
+    .pill-info {
+        background: #e3f0fb;
+        color: #1b5b94;
+    }
+
+    /* Row actions: solid square buttons (amber = edit / reset, red = delete / deactivate). */
+    .portal .btn-icon-warning,
+    .portal .btn-icon-danger {
+        --bs-btn-padding-x: 0;
+        --bs-btn-padding-y: 0;
+
         display: inline-grid;
         place-items: center;
-        flex-shrink: 0;
-        width: 2.75rem;
-        height: 2.75rem;
-        border-radius: var(--bs-border-radius-lg);
-        background: var(--bs-primary-bg-subtle);
-        color: var(--brand-text);
+        width: 2.4rem;
+        height: 2.4rem;
+        border-radius: 0.4rem;
+    }
+
+    .portal .btn-icon-warning {
+        --bs-btn-color: #1f2a37;
+        --bs-btn-bg: #f7b500;
+        --bs-btn-hover-color: #1f2a37;
+        --bs-btn-hover-bg: #e0a400;
+        --bs-btn-active-bg: #e0a400;
+        --bs-btn-active-color: #1f2a37;
+    }
+
+    .portal .btn-icon-danger {
+        --bs-btn-color: #fff;
+        --bs-btn-bg: #dc3545;
+        --bs-btn-hover-color: #fff;
+        --bs-btn-hover-bg: #bb2d3b;
+        --bs-btn-active-bg: #bb2d3b;
+        --bs-btn-active-color: #fff;
+    }
+
+    .portal .brand-form :is(.form-control, .form-select):focus {
+        background-color: #fff;
+    }
+
+    /* Dashboard figures. */
+    .summary-strip {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        margin: 0;
+    }
+
+    .summary-strip > div {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--portal-card-line);
+    }
+
+    .summary-strip > div:nth-child(odd) {
+        border-right: 1px solid var(--portal-card-line);
+    }
+
+    .summary-strip > div:nth-last-child(-n + 2) {
+        border-bottom: 0;
+    }
+
+    .summary-strip dt {
+        font-size: 0.875rem;
+        font-weight: 700;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+        color: var(--ink-soft);
+    }
+
+    .summary-strip dd {
+        margin: 0.35rem 0 0;
+        font-size: 2rem;
+        font-weight: 700;
+        line-height: 1.1;
+        font-variant-numeric: lining-nums tabular-nums;
+        color: var(--portal-navy);
+    }
+
+    .summary-strip dd small {
+        display: block;
+        margin-top: 0.3rem;
+        font-size: 0.875rem;
+        font-weight: 400;
+        color: var(--ink-soft);
+    }
+
+    @media (min-width: 768px) {
+        .summary-strip {
+            grid-template-columns: repeat(4, 1fr);
+        }
+
+        .summary-strip > div {
+            border-bottom: 0;
+            border-right: 1px solid var(--portal-card-line);
+        }
+
+        .summary-strip > div:last-child {
+            border-right: 0;
+        }
+    }
+
+    .portal .site-footer {
+        --bs-border-color: var(--portal-card-line);
+
+        background: #fff;
     }
 
     /* Small pieces ------------------------------------------------------ */
@@ -235,6 +637,13 @@
     background-color: #fff;
 }
 
+/* The portal sits on a light grey so its white cards stand out. */
+[data-bs-theme='light'] body.intake.portal {
+    --line: #dbe5ee;
+
+    background-color: #eef1f5;
+}
+
 @layer components {
     .intake {
         --ink: #1d2733;
@@ -249,10 +658,14 @@
     }
 
     /* Form */
+    /* Used by the cover form, the sign-in pages and the whole portal, so fields get their tint directly, not via --bs-body-bg (cards and tables read that). */
     .brand-form {
         --bs-border-color: var(--line);
-        --bs-body-bg: #f8fafc;
         --bs-border-radius: 8px;
+    }
+
+    .brand-form :is(.form-control, .form-select) {
+        background-color: #f8fafc;
     }
 
     .form-part + .form-part {

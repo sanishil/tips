@@ -5,19 +5,19 @@ use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Support\DemoData;
 use Illuminate\Support\Facades\Route;
 
 /*
-| Sign-in, sign-up and password reset are real. The cover page and portal pages
-| still render static sample data from DemoData.
+| Sign-in, sign-up, password reset and user accounts are real. The cover page and the
+| other portal pages have no data source yet, so they get empty lists and show their
+| "nothing yet" states.
 */
 
 Route::view('/', 'cover.form', [
-    'departments' => DemoData::departments(),
-    'subjects' => DemoData::subjects(),
-    'teachers' => DemoData::teachers(),
-    'options' => DemoData::options(),
+    'departments' => [],
+    'subjects' => [],
+    'teachers' => [],
+    'options' => [],
 ])->middleware('password.changed')->name('cover.form');
 
 Route::middleware('guest')->group(function () {
@@ -47,19 +47,19 @@ Route::middleware('auth')->group(function () {
 
 foreach (['admin', 'tech'] as $portal) {
     Route::prefix($portal)->name($portal.'.')->middleware(['auth', 'password.changed', 'role:'.$portal])->group(function () use ($portal) {
-        $shared = ['portal' => $portal, 'options' => DemoData::options(), 'departments' => DemoData::departments()];
+        $shared = ['portal' => $portal, 'options' => [], 'departments' => []];
 
-        Route::view('/', 'portal.dashboard', $shared + ['todayPrints' => DemoData::todayPrints()])->name('dashboard');
-        Route::view('/students', 'portal.students', $shared + ['students' => DemoData::students()])->name('students');
+        Route::view('/', 'portal.dashboard', $shared + ['todayPrints' => []])->name('dashboard');
+        Route::view('/students', 'portal.students', $shared + ['students' => []])->name('students');
         Route::view('/departments', 'portal.departments', $shared)->name('departments');
-        Route::view('/subjects', 'portal.subjects', $shared + ['subjects' => DemoData::subjects()])->name('subjects');
-        Route::view('/teachers', 'portal.teachers', $shared + ['teachers' => DemoData::teachers()])->name('teachers');
+        Route::view('/subjects', 'portal.subjects', $shared + ['subjects' => []])->name('subjects');
+        Route::view('/teachers', 'portal.teachers', $shared + ['teachers' => []])->name('teachers');
         Route::view('/profile', 'portal.profile', $shared)->name('profile');
 
         if ($portal === 'admin') {
             Route::get('/users', [UserController::class, 'index'])->name('users');
             Route::post('/users', [UserController::class, 'store'])->middleware('throttle:10,1')->name('users.store');
-            Route::view('/active-users', 'portal.active-users', $shared + ['users' => DemoData::users()])->name('active-users');
+            Route::view('/active-users', 'portal.active-users', $shared + ['users' => []])->name('active-users');
         }
     });
 }

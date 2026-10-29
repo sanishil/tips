@@ -3,18 +3,17 @@
         <div class="container-xl d-flex align-items-center justify-content-between gap-3 py-2">
             <a href="{{ route('cover.form') }}" class="text-decoration-none"><x-brand /></a>
             <div class="d-flex align-items-center gap-1 flex-shrink-0">
-                <a href="{{ route('login') }}" class="btn btn-sm btn-outline-secondary">Staff sign in</a>
+                <a href="{{ route('login') }}" class="btn btn-sm btn-outline-dark">
+                    <i class="fa-solid fa-right-to-bracket me-1" aria-hidden="true"></i> Login
+                </a>
             </div>
         </div>
     </header>
 
     <main id="main" class="container-xl py-4 py-lg-5 flex-grow-1">
-        <div class="mb-4 tw:max-w-2xl">
+        <div class="mb-4">
             <h1 class="font-display h2 mb-2">Assignment cover page</h1>
-            <p class="text-body-secondary mb-0">
-                Fill in the form and check the preview. When it looks right, print it — or choose
-                <em>Save as PDF</em> in the print window to keep a copy. The page is set up for A4.
-            </p>
+            <p class="text-body-secondary mb-0">Fill in the form and check the preview. When it looks right, print as PDF.</p>
         </div>
 
         <div class="row g-4 g-xl-5">
@@ -160,9 +159,9 @@
                     </div>
 
                     <div class="card-footer d-flex flex-column-reverse flex-sm-row justify-content-end gap-2 py-3">
-                        <button type="reset" class="btn btn-outline-secondary">Clear form</button>
-                        <button type="submit" class="btn btn-primary px-4">
-                            <i class="fa-solid fa-print me-1" aria-hidden="true"></i> Print or save as PDF
+                        <button type="reset" class="btn btn-danger">Clear form</button>
+                        <button type="submit" class="btn btn-success px-4">
+                            <i class="fa-solid fa-print me-1" aria-hidden="true"></i> Print as PDF
                         </button>
                     </div>
                 </form>
@@ -170,7 +169,7 @@
 
             <aside class="col-lg-5" aria-label="Preview">
                 <div class="sticky-lg-top tw:lg:top-6">
-                    <p class="small text-body-secondary mb-2">Preview — updates as you type</p>
+                    <p class="small text-body-secondary mb-2">Preview</p>
                     @include('cover.partials.paper')
                 </div>
             </aside>

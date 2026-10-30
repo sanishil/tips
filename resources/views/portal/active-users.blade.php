@@ -1,5 +1,5 @@
 <x-layouts.portal :portal="$portal" title="Signed in now">
-    <x-page-header title="Signed in now" :subtitle="'Anyone else active in the last '.$activeMinutes.' minutes.'" />
+    <x-page-header title="Signed in now" />
 
     @if ($users->isNotEmpty())
         <div class="card">

@@ -42,7 +42,6 @@ class ActiveUserController extends Controller
         return view('portal.active-users', [
             'portal' => 'admin',
             'users' => $users,
-            'activeMinutes' => self::ACTIVE_MINUTES,
         ]);
     }
 

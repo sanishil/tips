@@ -32,19 +32,6 @@
         } catch (e) {}
     </script>
 
-    {{-- Browsers that support it load a portal page while the pointer rests on its link, so the click opens it at once. --}}
-    <script type="speculationrules">
-        {
-            "prefetch": [{
-                "where": { "href_matches": "/{{ $portal }}/*" },
-                "eagerness": "moderate"
-            }, {
-                "where": { "href_matches": "/{{ $portal }}" },
-                "eagerness": "moderate"
-            }]
-        }
-    </script>
-
     {{-- Institute banner: scrolls away; the top bar below stays. --}}
     <header class="portal-banner">
         <a href="{{ route($portal.'.dashboard') }}" class="portal-banner-brand">

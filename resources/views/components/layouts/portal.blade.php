@@ -93,7 +93,7 @@
                 <h1 class="portal-title">{{ $title }}</h1>
                 <div class="ms-auto d-flex align-items-center gap-3 flex-shrink-0">
                     <a href="{{ route($portal.'.profile') }}" class="d-flex align-items-center gap-2 text-decoration-none text-reset" title="My profile">
-                        <span class="avatar">{{ $user->initials }}</span>
+                        <x-avatar :user="$user" />
                         <span class="lh-sm d-none d-md-block">
                             <span class="d-block fw-semibold">{{ $user->name }}</span>
                             <small class="text-body-secondary">{{ $user->role->label() }}</small>

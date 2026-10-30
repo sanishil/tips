@@ -8,7 +8,9 @@ use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\DepartmentController;
 use App\Http\Controllers\Portal\DesignationController;
+use App\Http\Controllers\Portal\ProfileController;
 use App\Http\Controllers\Portal\SubCourseController;
+use App\Http\Controllers\Portal\SubjectController;
 use App\Http\Controllers\Portal\TeacherController;
 use Illuminate\Support\Facades\Route;
 
@@ -62,7 +64,12 @@ foreach (['admin', 'tech'] as $portal) {
             Route::put('/departments/{department}', [DepartmentController::class, 'update'])->name('departments.update');
             Route::delete('/departments/{department}', [DepartmentController::class, 'destroy'])->name('departments.destroy');
         });
-        Route::view('/subjects', 'portal.subjects', $shared + ['subjects' => []])->name('subjects');
+        Route::get('/subjects', [SubjectController::class, 'index'])->name('subjects');
+        Route::middleware('throttle:30,1')->group(function () {
+            Route::post('/subjects', [SubjectController::class, 'store'])->name('subjects.store');
+            Route::put('/subjects/{subject}', [SubjectController::class, 'update'])->name('subjects.update');
+            Route::delete('/subjects/{subject}', [SubjectController::class, 'destroy'])->name('subjects.destroy');
+        });
         Route::get('/designations', [DesignationController::class, 'index'])->name('designations');
         Route::middleware('throttle:30,1')->group(function () {
             Route::post('/designations', [DesignationController::class, 'store'])->name('designations.store');
@@ -84,7 +91,13 @@ foreach (['admin', 'tech'] as $portal) {
             Route::put('/teachers/{teacher}', [TeacherController::class, 'update'])->name('teachers.update');
             Route::delete('/teachers/{teacher}', [TeacherController::class, 'destroy'])->name('teachers.destroy');
         });
-        Route::view('/profile', 'portal.profile', $shared)->name('profile');
+        Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
+        Route::middleware('throttle:30,1')->group(function () {
+            Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+            Route::post('/profile/photo', [ProfileController::class, 'updatePhoto'])->name('profile.photo');
+            Route::delete('/profile/photo', [ProfileController::class, 'destroyPhoto'])->name('profile.photo.destroy');
+        });
+        Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->middleware('throttle:profile-password')->name('profile.password');
 
         if ($portal === 'admin') {
             Route::get('/users', [UserController::class, 'index'])->name('users');

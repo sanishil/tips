@@ -147,7 +147,7 @@ document.querySelectorAll('[data-sidebar-toggle]').forEach((button) => {
 
 document.addEventListener('click', (event) => {
     const target = event.target.closest(
-        '[data-intro-replay], [data-sidebar-toggle], [data-theme-toggle], [data-password-toggle], [data-recaptcha-reset], [data-export-table], [data-table-clear]',
+        '[data-intro-replay], [data-sidebar-toggle], [data-theme-toggle], [data-password-toggle], [data-recaptcha-reset], [data-export-table], [data-table-clear], [data-table-page]',
     );
 
     if (!target) {
@@ -197,6 +197,12 @@ document.addEventListener('click', (event) => {
             field.value = '';
         });
         filterTable(tableId);
+    }
+
+    if (target.matches('[data-table-page]')) {
+        const tableId = target.dataset.tablePage;
+        filterTable(tableId, Number(target.dataset.page));
+        document.getElementById(tableId).closest('.card').scrollIntoView({ block: 'nearest', behavior: 'smooth' });
     }
 });
 
@@ -298,10 +304,17 @@ const autofill = (event) => {
 document.addEventListener('input', autofill);
 document.addEventListener('change', autofill);
 
-/* <select|datalist data-option-filter='{"dept":"std_dept"}'>: only offer options whose data-dept matches #std_dept. */
+/*
+| <select|datalist data-option-filter='{"dept":"std_dept"}'>: only offer options whose data-dept matches #std_dept.
+| An empty source normally offers everything; with data-option-filter-exact it only offers options whose attribute
+| is empty too (e.g. departments without a sub-course). data-option-empty-disables disables the select while nothing
+| matches, so it's skipped by `required` and isn't submitted (e.g. sub-course for a course that has none).
+| The placeholder reads data-label, data-empty when nothing matches, or data-waiting while every source is empty.
+*/
 document.querySelectorAll('select[data-option-filter], datalist[data-option-filter]').forEach((select) => {
     const rules = Object.entries(JSON.parse(select.dataset.optionFilter));
     const placeholder = select.querySelector('option[value=""]');
+    const exact = select.hasAttribute('data-option-filter-exact');
 
     const update = () => {
         let matches = 0;
@@ -314,7 +327,7 @@ document.querySelectorAll('select[data-option-filter], datalist[data-option-filt
             const visible = rules.every(([attribute, sourceId]) => {
                 const wanted = document.getElementById(sourceId).value;
 
-                return !wanted || option.dataset[attribute] === wanted;
+                return (!exact && !wanted) || (option.dataset[attribute] ?? '') === wanted;
             });
 
             option.hidden = !visible;
@@ -329,7 +342,12 @@ document.querySelectorAll('select[data-option-filter], datalist[data-option-filt
         }
 
         if (placeholder) {
-            placeholder.textContent = matches ? placeholder.dataset.label : placeholder.dataset.empty;
+            const waiting = placeholder.dataset.waiting && rules.every(([, sourceId]) => !document.getElementById(sourceId).value);
+            placeholder.textContent = matches ? placeholder.dataset.label : waiting ? placeholder.dataset.waiting : placeholder.dataset.empty;
+        }
+
+        if (select.hasAttribute('data-option-empty-disables')) {
+            select.disabled = !matches;
         }
     };
 
@@ -360,9 +378,10 @@ document.addEventListener('input', (event) => {
     });
 });
 
-/* Tables: search, filters, empty result -------------------------------------- */
+/* Tables: search, filters, pages, empty result ------------------------------- */
 
-function filterTable(tableId) {
+/* Rows matching the search and filters are shown `data-per-page` at a time; a new search starts again at page 1. */
+function filterTable(tableId, page = 1) {
     const table = document.getElementById(tableId);
     const query = (document.querySelector(`[data-table-search="${tableId}"]`)?.value ?? '').trim().toLowerCase();
     const filters = [...document.querySelectorAll(`[data-table-filter="${tableId}"]`)].filter((select) => select.value);
@@ -372,14 +391,22 @@ function filterTable(tableId) {
         return;
     }
 
-    let shown = 0;
-
-    rows.forEach((row) => {
-        const visible =
+    const matches = rows.filter((row) => {
+        const match =
             (!query || row.textContent.toLowerCase().includes(query)) &&
             filters.every((select) => row.dataset[select.dataset.filterKey] === select.value);
-        row.hidden = !visible;
-        shown += visible ? 1 : 0;
+        row.toggleAttribute('data-filtered-out', !match);
+        return match;
+    });
+
+    const perPage = Number(table.dataset.perPage) || matches.length || 1;
+    const pageCount = Math.max(1, Math.ceil(matches.length / perPage));
+    const current = Math.min(Math.max(1, page), pageCount);
+    const start = (current - 1) * perPage;
+    const onPage = new Set(matches.slice(start, start + perPage));
+
+    rows.forEach((row) => {
+        row.hidden = !onPage.has(row);
     });
 
     let noResults = table.querySelector('tr[data-no-results]');
@@ -395,11 +422,51 @@ function filterTable(tableId) {
         table.querySelector('tbody').append(noResults);
     }
 
-    noResults.hidden = shown > 0;
+    noResults.hidden = matches.length > 0;
+
+    const range = matches.length ? `${start + 1}–${start + onPage.size}` : '0';
+    document.querySelectorAll(`[data-table-range="${tableId}"]`).forEach((el) => {
+        el.textContent = range;
+    });
     document.querySelectorAll(`[data-table-count="${tableId}"]`).forEach((el) => {
-        el.textContent = shown;
+        el.textContent = matches.length;
+    });
+    document.querySelectorAll(`[data-table-total="${tableId}"]`).forEach((el) => {
+        el.textContent = ` (filtered from ${rows.length})`;
+        el.hidden = matches.length === rows.length;
+    });
+    document.querySelectorAll(`[data-table-pager="${tableId}"]`).forEach((nav) => {
+        nav.hidden = pageCount < 2;
+        nav.innerHTML = nav.hidden ? '' : pagerHtml(tableId, current, pageCount);
     });
 }
+
+/* Previous, numbered pages (first, last and the two either side of the current one), next. */
+function pagerHtml(tableId, current, pageCount) {
+    const item = (label, page, { active = false, disabled = false, ariaLabel = null } = {}) => `
+        <li class="page-item${active ? ' active' : ''}${disabled ? ' disabled' : ''}">
+            <button type="button" class="page-link" data-table-page="${tableId}" data-page="${page}"
+                ${disabled ? 'disabled' : ''} ${active ? 'aria-current="page"' : ''} ${ariaLabel ? `aria-label="${ariaLabel}"` : ''}>${label}</button>
+        </li>`;
+    const gap = '<li class="page-item disabled"><span class="page-link">…</span></li>';
+
+    const pages = [...Array(pageCount).keys()]
+        .map((index) => index + 1)
+        .filter((page) => page === 1 || page === pageCount || Math.abs(page - current) <= 2);
+
+    const numbered = pages.map((page, index) => {
+        const skipped = index > 0 && page - pages[index - 1] > 1;
+        return (skipped ? gap : '') + item(page, page, { active: page === current, ariaLabel: `Page ${page}` });
+    });
+
+    return `<ul class="pagination pagination-sm mb-0">
+        ${item('<i class="fa-solid fa-chevron-left" aria-hidden="true"></i>', current - 1, { disabled: current === 1, ariaLabel: 'Previous page' })}
+        ${numbered.join('')}
+        ${item('<i class="fa-solid fa-chevron-right" aria-hidden="true"></i>', current + 1, { disabled: current === pageCount, ariaLabel: 'Next page' })}
+    </ul>`;
+}
+
+document.querySelectorAll('table[data-per-page]').forEach((table) => filterTable(table.id));
 
 document.addEventListener('input', (event) => {
     if (event.target.dataset?.tableSearch) {
@@ -420,7 +487,7 @@ function exportTable(tableId, name = 'export') {
     const escape = (value) => (/[",\n]/.test(value) ? `"${value.replace(/"/g, '""')}"` : value);
 
     const header = [...table.querySelectorAll('thead th')].filter(keep).map(text);
-    const rows = [...table.querySelectorAll('tbody tr:not([hidden]):not([data-empty-row]):not([data-no-results])')].map((row) =>
+    const rows = [...table.querySelectorAll('tbody tr:not([data-filtered-out]):not([data-empty-row]):not([data-no-results])')].map((row) =>
         [...row.cells].filter(keep).map(text),
     );
 
@@ -474,6 +541,9 @@ document.addEventListener('show.bs.modal', (event) => {
             el.textContent = value;
         });
     }
+
+    /* Filling a field doesn't fire `change`, so re-narrow dependent lists (e.g. sub-courses) to the filled values. */
+    modal.querySelectorAll('[data-option-filter]').forEach((select) => select.dispatchEvent(new Event('refresh')));
 });
 
 document.querySelectorAll('.modal[data-show-on-load]').forEach((modal) => bootstrap.Modal.getOrCreateInstance(modal).show());
@@ -591,7 +661,7 @@ window.recaptchaChecked = () => {
     document.querySelectorAll('[data-recaptcha] .invalid-feedback').forEach((error) => error.classList.remove('d-block'));
 };
 
-/* Profile photo: check type and size before showing it. */
+/* Profile photo: check type and size, show it, then send its form (the server saves it and confirms). */
 document.addEventListener('change', (event) => {
     const input = event.target;
 
@@ -619,7 +689,7 @@ document.addEventListener('change', (event) => {
     image.alt = '';
     image.src = URL.createObjectURL(file);
     document.querySelector('[data-photo-preview]').replaceChildren(image);
-    toast('Photo updated.');
+    input.form?.requestSubmit();
 });
 
 /* Printing: copy the live preview into a top-level element (see app.css). */

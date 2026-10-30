@@ -20,14 +20,13 @@
             <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#add-course"><i class="fa-solid fa-plus me-1" aria-hidden="true"></i> Add course</button>
         </x-slot:actions>
         <thead>
-            <tr><th>Course</th><th class="text-end">Sub-courses</th><th>Added</th><th class="text-end" data-export-skip><span class="visually-hidden">Actions</span></th></tr>
+            <tr><th>Course</th><th class="text-end">Sub-courses</th><th class="text-end" data-export-skip><span class="visually-hidden">Actions</span></th></tr>
         </thead>
         <tbody>
             @forelse ($courses as $course)
                 <tr>
                     <td class="fw-semibold">{{ $course->name }}</td>
                     <td class="text-end">{{ $course->sub_courses_count }}</td>
-                    <td class="text-body-secondary" data-export="{{ $course->created_at->toDateString() }}">{{ $course->created_at->format('j M Y') }}</td>
                     <x-row-actions
                         :record="['course_record_id' => $course->id, 'name' => $course->name]"
                         :label="$course->name"
@@ -38,7 +37,7 @@
                     />
                 </tr>
             @empty
-                <x-empty-state colspan="4" title="No courses yet" icon="fa-graduation-cap" />
+                <x-empty-state colspan="3" title="No courses yet" icon="fa-graduation-cap" />
             @endforelse
         </tbody>
     </x-table-card>
@@ -58,14 +57,13 @@
                 </select>
             </x-slot:filters>
             <thead>
-                <tr><th>Sub-course</th><th>Course</th><th>Added</th><th class="text-end" data-export-skip><span class="visually-hidden">Actions</span></th></tr>
+                <tr><th>Sub-course</th><th>Course</th><th class="text-end" data-export-skip><span class="visually-hidden">Actions</span></th></tr>
             </thead>
             <tbody>
                 @forelse ($subCourses as $subCourse)
                     <tr data-course="{{ $subCourse->course->name }}">
                         <td class="fw-semibold">{{ $subCourse->name }}</td>
                         <td><span class="pill pill-info">{{ $subCourse->course->name }}</span></td>
-                        <td class="text-body-secondary" data-export="{{ $subCourse->created_at->toDateString() }}">{{ $subCourse->created_at->format('j M Y') }}</td>
                         <x-row-actions
                             :record="['sub_course_id' => $subCourse->id, 'course_id' => (string) $subCourse->course_id, 'name' => $subCourse->name]"
                             :label="$subCourse->name"
@@ -76,7 +74,7 @@
                         />
                     </tr>
                 @empty
-                    <x-empty-state colspan="4" title="No sub-courses yet" icon="fa-diagram-project" />
+                    <x-empty-state colspan="3" title="No sub-courses yet" icon="fa-diagram-project" />
                 @endforelse
             </tbody>
         </x-table-card>
@@ -106,7 +104,7 @@
     @endforeach
 
     <x-modal id="delete-course" title="Delete this course?" submit="Delete" busy="Deleting…" danger :action="route($portal.'.courses')" method="DELETE">
-        <p class="mb-0"><strong data-record-text="name"></strong> will be removed. A course that still has sub-courses can't be deleted.</p>
+        <p class="mb-0"><strong data-record-text="name"></strong> will be removed. A course that still has sub-courses, departments or subjects can't be deleted.</p>
     </x-modal>
 
     {{-- Sub-course dialogs --}}
@@ -147,6 +145,6 @@
     @endforeach
 
     <x-modal id="delete-sub-course" title="Delete this sub-course?" submit="Delete" busy="Deleting…" danger :action="route($portal.'.courses')" method="DELETE">
-        <p class="mb-0"><strong data-record-text="name"></strong> will be removed. This can't be undone.</p>
+        <p class="mb-0"><strong data-record-text="name"></strong> will be removed. This can't be undone. A sub-course that still has subjects or departments can't be deleted.</p>
     </x-modal>
 </x-layouts.portal>

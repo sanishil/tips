@@ -72,6 +72,12 @@ class AppServiceProvider extends ServiceProvider
                 ->response($tooMany('code', 'We\'ve sent several codes already. Please wait 10 minutes.')),
         ]);
 
+        /* Guessing the current password on the profile page; the error lands on that form. */
+        RateLimiter::for('profile-password', fn (Request $request) => [
+            Limit::perMinute(5)->by('profile|'.$request->user()?->id)
+                ->response(fn (): Response => back()->withErrors(['current_password' => 'Too many tries. Please wait a minute.'], 'updatePassword')),
+        ]);
+
         RateLimiter::for('new-password', fn (Request $request) => [
             Limit::perMinute(5)->by(($request->user()?->email ?? $pendingEmail($request)).'|'.$request->ip())
                 ->response($tooMany('password', 'Too many tries. Please wait a minute.')),

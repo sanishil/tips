@@ -1,6 +1,9 @@
-@props(['id', 'title', 'count', 'placeholder' => 'Search'])
+@props(['id', 'title', 'count', 'placeholder' => 'Search', 'perPage' => 10])
 
-{{-- The `actions` slot (Add…, Export) sits beside the search box and shows even when the table is empty. --}}
+{{--
+    The `actions` slot (Add…, Export) sits beside the search box and shows even when the table is empty.
+    Rows are paged in the browser, `perPage` at a time, so search, filters and export still cover every row.
+--}}
 <div class="card table-card">
     <div class="card-header d-flex flex-column flex-lg-row align-items-lg-center justify-content-between gap-3">
         <h2 class="mb-0">{{ $title }}</h2>
@@ -17,14 +20,18 @@
     </div>
 
     <div class="table-responsive">
-        <table id="{{ $id }}" class="table table-hover align-middle mb-0">
+        <table id="{{ $id }}" class="table table-hover align-middle mb-0" data-per-page="{{ $perPage }}">
             {{ $slot }}
         </table>
     </div>
 
     @if ($count > 0)
-        <div class="card-footer small text-body-secondary">
-            Showing <span data-table-count="{{ $id }}">{{ $count }}</span> of {{ $count }}
+        <div class="card-footer small text-body-secondary d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-2">
+            <div>
+                Showing <span data-table-range="{{ $id }}">1–{{ min($count, $perPage) }}</span>
+                of <span data-table-count="{{ $id }}">{{ $count }}</span><span data-table-total="{{ $id }}" hidden></span>
+            </div>
+            <nav aria-label="{{ $title }} pages" data-table-pager="{{ $id }}" @if ($count <= $perPage) hidden @endif></nav>
         </div>
     @endif
 </div>

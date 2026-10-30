@@ -2,6 +2,7 @@
 
 namespace Database\Factories;
 
+use App\Models\Course;
 use App\Models\Department;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -19,7 +20,8 @@ class DepartmentFactory extends Factory
     {
         return [
             'dept_name' => fake()->unique()->words(2, true).' Technology',
-            'hod' => 'Dr. '.fake()->firstName().' '.fake()->lastName(),
+            'course_id' => Course::factory(),
+            'sub_course_id' => null,
         ];
     }
 }

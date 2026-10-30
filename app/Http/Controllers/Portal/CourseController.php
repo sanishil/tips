@@ -42,7 +42,7 @@ class CourseController extends Controller
     }
 
     /**
-     * A course that still has sub-courses can't go (the database refuses too); say why instead.
+     * A course that still has sub-courses, departments or subjects can't go (the database refuses too); say why instead.
      */
     public function destroy(Request $request, Course $course): RedirectResponse
     {
@@ -53,6 +53,26 @@ class CourseController extends Controller
                 $request,
                 'error',
                 "“{$course->name}” still has {$subCourseCount} ".Str::plural('sub-course', $subCourseCount).'. Move or delete them first.',
+            );
+        }
+
+        $departmentCount = $course->departments()->count();
+
+        if ($departmentCount > 0) {
+            return $this->backToList(
+                $request,
+                'error',
+                "“{$course->name}” is used by {$departmentCount} ".Str::plural('department', $departmentCount).'. Change their course first.',
+            );
+        }
+
+        $subjectCount = $course->subjects()->count();
+
+        if ($subjectCount > 0) {
+            return $this->backToList(
+                $request,
+                'error',
+                "“{$course->name}” still has {$subjectCount} ".Str::plural('subject', $subjectCount).'. Move or delete them first.',
             );
         }
 

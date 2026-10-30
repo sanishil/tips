@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 #[Fillable(['name', 'email', 'password', 'role', 'must_change_password', 'email_verified_at'])]
@@ -48,5 +49,15 @@ class User extends Authenticatable
             ->take(2)
             ->map(fn (string $part): string => Str::upper(Str::substr($part, 0, 1)))
             ->implode(''));
+    }
+
+    /**
+     * Where the profile photo is served from, or null when there's none (the avatar shows initials instead).
+     *
+     * @return Attribute<?string, never>
+     */
+    protected function photoUrl(): Attribute
+    {
+        return Attribute::get(fn (): ?string => $this->photo_path ? Storage::disk('public')->url($this->photo_path) : null);
     }
 }

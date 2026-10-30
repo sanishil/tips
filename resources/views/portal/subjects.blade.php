@@ -16,7 +16,7 @@
 @endphp
 
 <x-layouts.portal :portal="$portal" title="Subjects">
-    <x-page-header title="Subjects" subtitle="Students only see the subjects for their own course, sub-course, semester and department." />
+    <x-page-header title="Subjects" />
 
     <x-table-card id="subjects-table" title="All subjects" :count="$subjects->count()" placeholder="Search name or code">
         <x-slot:actions>

@@ -7,7 +7,7 @@
 @endphp
 
 <x-layouts.portal :portal="$portal" title="User accounts">
-    <x-page-header title="User accounts" subtitle="Students sign themselves up. Create tech and admin accounts here; the password goes to them by email." />
+    <x-page-header title="User accounts" />
 
     <x-table-card id="users-table" title="All accounts" :count="$users->count()" placeholder="Search name or email">
         <x-slot:actions>

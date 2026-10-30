@@ -14,7 +14,7 @@
 @endphp
 
 <x-layouts.portal :portal="$portal" title="Teachers">
-    <x-page-header title="Teachers" subtitle="Students pick from this list under “Submitted to”." />
+    <x-page-header title="Teachers" />
 
     <x-table-card id="teachers-table" title="All teachers" :count="$teachers->count()" placeholder="Search teachers">
         <x-slot:actions>

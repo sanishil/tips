@@ -9,7 +9,7 @@
 @endphp
 
 <x-layouts.portal :portal="$portal" title="Departments">
-    <x-page-header title="Departments" subtitle="Each department runs under a course, and optionally a sub-course. Subjects, teachers and students all belong to one." />
+    <x-page-header title="Departments" />
 
     <x-table-card id="departments-table" title="All departments" :count="$departments->count()" placeholder="Search departments">
         <x-slot:actions>

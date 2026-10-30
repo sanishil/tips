@@ -9,7 +9,7 @@
 @endphp
 
 <x-layouts.portal :portal="$portal" title="Designations">
-    <x-page-header title="Designations" subtitle="Teachers pick their designation from this list; it's printed under their name on the cover page." />
+    <x-page-header title="Designations" />
 
     <x-table-card id="designations-table" title="All designations" :count="$designations->count()" placeholder="Search designations">
         <x-slot:actions>

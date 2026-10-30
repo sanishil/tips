@@ -12,7 +12,7 @@
 @endphp
 
 <x-layouts.portal :portal="$portal" title="Courses">
-    <x-page-header title="Courses" subtitle="Courses such as UG and PG, and the sub-courses under each (UG → Paramedical, PG → MLT)." />
+    <x-page-header title="Courses" />
 
     {{-- Courses ---------------------------------------------------------------- --}}
     <x-table-card id="courses-table" title="All courses" :count="$courses->count()" placeholder="Search courses">

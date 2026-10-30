@@ -12,16 +12,16 @@
             <section class="card" aria-labelledby="photo-heading">
                 <div class="card-body p-4 d-flex flex-column align-items-center text-center">
                     <h2 id="photo-heading" class="visually-hidden">Photo</h2>
-                    <x-avatar :user="$user" class="tw:size-24! tw:text-2xl!" data-photo-preview />
+                    <x-avatar :user="$user" :class="$user->photo_path ? 'passport-photo' : 'tw:size-24! tw:text-2xl!'" />
                     <p class="fw-semibold mt-3 mb-0">{{ $user->name }}</p>
                     <p class="small text-body-secondary mb-3">{{ $user->role->label() }}</p>
 
-                    {{-- Choosing a file checks it in the browser, then sends it straight away. --}}
+                    {{-- Choosing a file opens the cropper; "Use this photo" sends the cropped passport-size copy. --}}
                     <form method="POST" action="{{ route($portal.'.profile.photo') }}" enctype="multipart/form-data" novalidate>
                         @csrf
                         <label class="btn btn-sm btn-outline-success">
                             <i class="fa-solid fa-camera me-1" aria-hidden="true"></i> {{ $user->photo_path ? 'Change photo' : 'Add photo' }}
-                            <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" class="visually-hidden" data-photo-input="photo-error">
+                            <input type="file" name="photo" accept="image/jpeg,image/png,image/webp" class="visually-hidden" data-photo-input="photo-error" data-cropper="photo-cropper">
                         </label>
                     </form>
                     @if ($user->photo_path)
@@ -32,7 +32,7 @@
                         </form>
                     @endif
                     <p id="photo-error" class="small text-danger mt-2 mb-0" role="alert" @if (! $photoErrors->has('photo')) hidden @endif>{{ $photoErrors->first('photo') }}</p>
-                    <p class="form-text mb-0">JPG, PNG or WebP, 2 MB at most.</p>
+                    <p class="form-text mb-0">JPG, PNG or WebP. You'll crop it to passport size (35 × 45 mm).</p>
                 </div>
             </section>
         </div>
@@ -84,6 +84,33 @@
                 </div>
                 <div class="card-footer text-end"><button type="submit" class="btn btn-success" data-busy="Updating…"><i class="fa-solid fa-key me-1" aria-hidden="true"></i> Change password</button></div>
             </form>
+        </div>
+    </div>
+
+    <div class="modal fade" id="photo-cropper" tabindex="-1" data-bs-backdrop="static" aria-labelledby="photo-cropper-title" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 class="modal-title h5 font-display" id="photo-cropper-title">Crop to passport size</h2>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body vstack gap-3">
+                    <p id="photo-cropper-help" class="small text-body-secondary mb-0">Drag the photo (or use the arrow keys) so your face sits inside the oval, and zoom until your head and shoulders fill the frame.</p>
+                    <div class="photo-cropper" tabindex="0" role="img" aria-label="Photo crop area" aria-describedby="photo-cropper-help" data-cropper-stage>
+                        <img alt="" data-cropper-image>
+                        <span class="photo-cropper-guide"></span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2 mx-auto w-100 tw:max-w-72">
+                        <i class="fa-solid fa-magnifying-glass-minus text-body-secondary" aria-hidden="true"></i>
+                        <input type="range" class="form-range" min="1" max="4" step="0.01" value="1" aria-label="Zoom" data-cropper-zoom>
+                        <i class="fa-solid fa-magnifying-glass-plus text-body-secondary" aria-hidden="true"></i>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-xmark me-1" aria-hidden="true"></i> Cancel</button>
+                    <button type="button" class="btn btn-success" data-cropper-save data-busy="Saving…"><i class="fa-solid fa-check me-1" aria-hidden="true"></i> Use this photo</button>
+                </div>
+            </div>
         </div>
     </div>
 </x-layouts.portal>

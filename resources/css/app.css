@@ -578,6 +578,59 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+        /* Photos are passport-shaped (35 × 45 mm); in a circle, keep the face rather than the shoulders. */
+        object-position: center 30%;
+    }
+
+    /* The profile page shows the photo at its real passport shape instead of a circle. */
+    .avatar.passport-photo {
+        width: 7.5rem;
+        height: auto;
+        aspect-ratio: 35 / 45;
+        border-radius: 0.5rem;
+        box-shadow: 0 0 0 1px var(--bs-border-color);
+    }
+
+    .avatar.passport-photo img {
+        object-position: center;
+    }
+
+    /* Photo cropper: a fixed 35 × 45 frame; the image is dragged and zoomed behind it. */
+    .photo-cropper {
+        position: relative;
+        width: min(17.5rem, 100%);
+        aspect-ratio: 35 / 45;
+        margin-inline: auto;
+        overflow: hidden;
+        border-radius: 0.5rem;
+        background: #fff;
+        box-shadow: 0 0 0 1px var(--bs-border-color);
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+    }
+
+    .photo-cropper:active {
+        cursor: grabbing;
+    }
+
+    .photo-cropper img {
+        position: absolute;
+        top: 0;
+        left: 0;
+        max-width: none;
+        transform-origin: 0 0;
+        pointer-events: none;
+    }
+
+    /* Where the face should sit, as on a passport photo. */
+    .photo-cropper-guide {
+        position: absolute;
+        inset: 12% 22% 30%;
+        border: 2px dashed rgba(255, 255, 255, 0.9);
+        border-radius: 50%;
+        box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.25);
+        pointer-events: none;
     }
 
     .btn-icon {

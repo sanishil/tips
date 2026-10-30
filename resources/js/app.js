@@ -661,7 +661,13 @@ window.recaptchaChecked = () => {
     document.querySelectorAll('[data-recaptcha] .invalid-feedback').forEach((error) => error.classList.remove('d-block'));
 };
 
-/* Profile photo: check type and size, show it, then send its form (the server saves it and confirms). */
+/*
+| Profile photo: check the file, crop it to passport size in the dialog named by data-cropper, then send the
+| cropped copy (a 35 × 45 mm JPEG) in place of the original. The original never leaves the browser.
+*/
+const PASSPORT_PHOTO = { width: 420, height: 540, maxSourceBytes: 10 * 1024 * 1024 };
+let cropper = null;
+
 document.addEventListener('change', (event) => {
     const input = event.target;
 
@@ -675,8 +681,8 @@ document.addEventListener('change', (event) => {
 
     error.textContent = !allowed.includes(file.type)
         ? 'Use a JPG, PNG or WebP image.'
-        : file.size > 2 * 1024 * 1024
-          ? 'That image is larger than 2 MB.'
+        : file.size > PASSPORT_PHOTO.maxSourceBytes
+          ? 'That image is larger than 10 MB.'
           : '';
     error.hidden = !error.textContent;
 
@@ -685,11 +691,174 @@ document.addEventListener('change', (event) => {
         return;
     }
 
-    const image = document.createElement('img');
-    image.alt = '';
+    openCropper(input, file, error);
+});
+
+function openCropper(input, file, error) {
+    const modal = document.getElementById(input.dataset.cropper);
+    const image = modal.querySelector('[data-cropper-image]');
+    const shown = new Promise((resolve) => modal.addEventListener('shown.bs.modal', resolve, { once: true }));
+
+    cropper = { input, modal, image, zoom: modal.querySelector('[data-cropper-zoom]'), saved: false };
     image.src = URL.createObjectURL(file);
-    document.querySelector('[data-photo-preview]').replaceChildren(image);
-    input.form?.requestSubmit();
+    bootstrap.Modal.getOrCreateInstance(modal).show();
+
+    /* The frame only has a size once the dialog is on screen. */
+    Promise.all([shown, image.decode()])
+        .then(() => fitCropper(modal.querySelector('[data-cropper-stage]')))
+        .catch(() => {
+            error.textContent = 'We couldn\'t read that image. Try another one.';
+            error.hidden = false;
+            bootstrap.Modal.getInstance(modal)?.hide();
+        });
+}
+
+/* Start with the whole frame covered and the photo centred. */
+function fitCropper(stage) {
+    const { width, height } = stage.getBoundingClientRect();
+    const { naturalWidth, naturalHeight } = cropper.image;
+
+    cropper.frame = { width, height };
+    cropper.minScale = Math.max(width / naturalWidth, height / naturalHeight);
+    cropper.scale = cropper.minScale;
+    cropper.x = (width - naturalWidth * cropper.scale) / 2;
+    cropper.y = (height - naturalHeight * cropper.scale) / 2;
+    cropper.zoom.value = 1;
+    renderCropper();
+}
+
+/* Keep the photo covering the frame, so the saved picture never has empty edges. */
+function renderCropper() {
+    const { image, frame, scale } = cropper;
+    cropper.x = Math.min(0, Math.max(frame.width - image.naturalWidth * scale, cropper.x));
+    cropper.y = Math.min(0, Math.max(frame.height - image.naturalHeight * scale, cropper.y));
+    image.style.transform = `translate(${cropper.x}px, ${cropper.y}px) scale(${scale})`;
+}
+
+/* Zoom around a point in the frame (its centre, or where the mouse wheel is). */
+function zoomCropper(level, focusX = cropper.frame.width / 2, focusY = cropper.frame.height / 2) {
+    const scale = cropper.minScale * Math.min(4, Math.max(1, level));
+    const ratio = scale / cropper.scale;
+
+    cropper.x = focusX - (focusX - cropper.x) * ratio;
+    cropper.y = focusY - (focusY - cropper.y) * ratio;
+    cropper.scale = scale;
+    cropper.zoom.value = scale / cropper.minScale;
+    renderCropper();
+}
+
+document.addEventListener('pointerdown', (event) => {
+    const stage = event.target.closest('[data-cropper-stage]');
+
+    if (!stage || !cropper?.frame) {
+        return;
+    }
+
+    stage.setPointerCapture(event.pointerId);
+    cropper.drag = { x: event.clientX, y: event.clientY };
+});
+
+document.addEventListener('pointermove', (event) => {
+    if (!cropper?.drag) {
+        return;
+    }
+
+    cropper.x += event.clientX - cropper.drag.x;
+    cropper.y += event.clientY - cropper.drag.y;
+    cropper.drag = { x: event.clientX, y: event.clientY };
+    renderCropper();
+});
+
+['pointerup', 'pointercancel'].forEach((type) =>
+    document.addEventListener(type, () => {
+        if (cropper) {
+            cropper.drag = null;
+        }
+    }),
+);
+
+document.addEventListener(
+    'wheel',
+    (event) => {
+        const stage = event.target.closest('[data-cropper-stage]');
+
+        if (!stage || !cropper?.frame) {
+            return;
+        }
+
+        event.preventDefault();
+        const box = stage.getBoundingClientRect();
+        const level = cropper.scale / cropper.minScale;
+        zoomCropper(event.deltaY < 0 ? level * 1.1 : level / 1.1, event.clientX - box.left, event.clientY - box.top);
+    },
+    { passive: false },
+);
+
+document.addEventListener('keydown', (event) => {
+    const step = { ArrowLeft: [10, 0], ArrowRight: [-10, 0], ArrowUp: [0, 10], ArrowDown: [0, -10] }[event.key];
+
+    if (!step || !event.target.matches('[data-cropper-stage]') || !cropper?.frame) {
+        return;
+    }
+
+    event.preventDefault();
+    cropper.x += step[0];
+    cropper.y += step[1];
+    renderCropper();
+});
+
+document.addEventListener('input', (event) => {
+    if (event.target.matches('[data-cropper-zoom]') && cropper?.frame) {
+        zoomCropper(Number(event.target.value));
+    }
+});
+
+/* Draw what's inside the frame at passport size, put it in the file field, and send the form. */
+document.addEventListener('click', (event) => {
+    const button = event.target.closest('[data-cropper-save]');
+
+    if (!button || !cropper?.frame || cropper.saved) {
+        return;
+    }
+
+    const { image, frame, scale, x, y, input } = cropper;
+    const canvas = document.createElement('canvas');
+    canvas.width = PASSPORT_PHOTO.width;
+    canvas.height = PASSPORT_PHOTO.height;
+
+    const context = canvas.getContext('2d');
+    context.fillStyle = '#fff';
+    context.fillRect(0, 0, canvas.width, canvas.height);
+    context.imageSmoothingQuality = 'high';
+    context.drawImage(image, -x / scale, -y / scale, frame.width / scale, frame.height / scale, 0, 0, canvas.width, canvas.height);
+
+    cropper.saved = true;
+    setBusy(button, true);
+
+    canvas.toBlob(
+        (blob) => {
+            const files = new DataTransfer();
+            files.items.add(new File([blob], 'passport-photo.jpg', { type: 'image/jpeg' }));
+            input.files = files.files;
+            input.form.requestSubmit();
+        },
+        'image/jpeg',
+        0.9,
+    );
+});
+
+/* Closing without "Use this photo" forgets the chosen file. */
+document.addEventListener('hidden.bs.modal', (event) => {
+    if (!cropper || event.target !== cropper.modal) {
+        return;
+    }
+
+    if (!cropper.saved) {
+        cropper.input.value = '';
+    }
+
+    URL.revokeObjectURL(cropper.image.src);
+    cropper = null;
 });
 
 /* Printing: copy the live preview into a top-level element (see app.css). */

@@ -89,15 +89,19 @@ class ProfileController extends Controller
         return $this->backToProfile($request, 'Password changed. You\'ve been signed out on other devices.');
     }
 
+    /**
+     * The page crops photos to passport size (35 × 45 mm) before sending them; anything else is turned away.
+     */
     public function updatePhoto(Request $request): RedirectResponse
     {
         $request->validateWithBag('updatePhoto', [
-            'photo' => ['required', 'file', 'mimes:jpg,jpeg,png,webp', 'max:2048'],
+            'photo' => ['required', 'file', 'mimes:jpg,jpeg,png,webp', 'max:2048', 'dimensions:ratio=35/45'],
         ], [
             'photo.required' => 'Choose an image.',
             'photo.file' => 'Choose an image.',
             'photo.mimes' => 'Use a JPG, PNG or WebP image.',
             'photo.max' => 'That image is larger than 2 MB.',
+            'photo.dimensions' => 'Crop the photo to passport size (35 × 45 mm) first.',
         ]);
 
         $user = $request->user();

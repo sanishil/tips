@@ -6,7 +6,6 @@ use App\Http\Controllers\Controller;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -79,12 +78,7 @@ class ProfileController extends Controller
             'remember_token' => Str::random(60),
         ])->save();
 
-        if (config('session.driver') === 'database') {
-            DB::table(config('session.table', 'sessions'))
-                ->where('user_id', $user->id)
-                ->where('id', '!=', $request->session()->getId())
-                ->delete();
-        }
+        $user->signOutEverywhere(except: $request->session()->getId());
 
         return $this->backToProfile($request, 'Password changed. You\'ve been signed out on other devices.');
     }

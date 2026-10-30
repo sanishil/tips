@@ -44,4 +44,27 @@ class EmailedPasswordAccount
             return $user;
         });
     }
+
+    /**
+     * An admin's "Send new password": the old password stops working, every session ends, and the account
+     * must choose its own password again on next sign-in. Nothing changes if the email can't be sent.
+     *
+     * @throws TransportExceptionInterface
+     */
+    public function sendNewPassword(User $user): void
+    {
+        $password = Str::password(self::PASSWORD_LENGTH, letters: false, symbols: false);
+
+        DB::transaction(function () use ($user, $password): void {
+            $user->forceFill([
+                'password' => $password,
+                'must_change_password' => true,
+                'remember_token' => Str::random(60),
+            ])->save();
+
+            Mail::to($user->email)->send(new AccountPasswordMail($user->name, $password, isNewPassword: true));
+        });
+
+        $user->signOutEverywhere();
+    }
 }

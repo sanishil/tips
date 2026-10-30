@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 #[Fillable(['name', 'email', 'password', 'role', 'must_change_password', 'email_verified_at'])]
@@ -32,7 +33,24 @@ class User extends Authenticatable
             'password' => 'hashed',
             'role' => UserRole::class,
             'must_change_password' => 'boolean',
+            'deactivated_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Ends every signed-in session of this account (sessions are kept in the database), e.g. after
+     * its password changes or it's deactivated. `$except` keeps one session, such as the current one.
+     */
+    public function signOutEverywhere(?string $except = null): void
+    {
+        if (config('session.driver') !== 'database') {
+            return;
+        }
+
+        DB::table(config('session.table', 'sessions'))
+            ->where('user_id', $this->id)
+            ->when($except, fn ($query) => $query->where('id', '!=', $except))
+            ->delete();
     }
 
     /**

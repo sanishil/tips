@@ -9,13 +9,13 @@ use Illuminate\Mail\Mailables\Envelope;
 use Illuminate\Queue\SerializesModels;
 
 /**
- * Sent once the sign-up code is confirmed: the first password for the new account.
+ * The emailed password: the first one for a new account, or a new one an admin sent (`isNewPassword`).
  */
 class AccountPasswordMail extends Mailable
 {
     use Queueable, SerializesModels;
 
-    public function __construct(public string $name, public string $password) {}
+    public function __construct(public string $name, public string $password, public bool $isNewPassword = false) {}
 
     /**
      * Get the message envelope.
@@ -23,7 +23,7 @@ class AccountPasswordMail extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: 'Your account is ready',
+            subject: $this->isNewPassword ? 'Your new password' : 'Your account is ready',
         );
     }
 

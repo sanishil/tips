@@ -7,7 +7,11 @@
     $departmentCount = count($departments);
     $figures = [
         'Students' => [$totals['students'], 'in '.$departmentCount.' '.\Illuminate\Support\Str::plural('department', $departmentCount)],
-        'Teachers' => [$totals['teachers'], $totals['teachers'] ? '1 for every '.round($totals['students'] / $totals['teachers']).' students' : 'none added yet'],
+        'Teachers' => [$totals['teachers'], match (true) {
+            ! $totals['teachers'] => 'none added yet',
+            ! $totals['students'] => 'across all departments',
+            default => '1 for every '.round($totals['students'] / $totals['teachers']).' students',
+        }],
         'Subjects' => [$totals['subjects'], 'across all courses'],
         'Printed today' => [count($todayPrints), $todayPrints ? 'last at '.$todayPrints[0]['time'] : 'nothing yet'],
     ];

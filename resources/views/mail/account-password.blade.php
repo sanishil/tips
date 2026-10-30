@@ -1,7 +1,11 @@
 <x-mail::message>
 Hello {{ $name }},
 
+@if ($isNewPassword)
+An admin has set a new password for your account. Your old password no longer works. Use this one to sign in:
+@else
 Your account is ready. Use this password to sign in:
+@endif
 
 <x-mail::panel>
 <span style="font-size: 20px; font-weight: 700; letter-spacing: 1px; font-family: Consolas, 'Courier New', monospace;">{{ $password }}</span>

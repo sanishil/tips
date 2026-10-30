@@ -47,6 +47,15 @@ class LoginController extends Controller
         }
 
         RateLimiter::clear($throttleKey);
+
+        if ($request->user()->deactivated_at) {
+            Auth::logout();
+
+            throw ValidationException::withMessages([
+                'email' => 'This account has been deactivated. Ask an admin to turn it back on.',
+            ]);
+        }
+
         $request->session()->regenerate();
 
         $user = $request->user();

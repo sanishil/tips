@@ -1,11 +1,13 @@
 <?php
 
+use App\Http\Controllers\Admin\ActiveUserController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Portal\CourseController;
+use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\DepartmentController;
 use App\Http\Controllers\Portal\DesignationController;
 use App\Http\Controllers\Portal\ProfileController;
@@ -56,7 +58,7 @@ foreach (['admin', 'tech'] as $portal) {
     Route::prefix($portal)->name($portal.'.')->middleware(['auth', 'password.changed', 'role:'.$portal])->group(function () use ($portal) {
         $shared = ['portal' => $portal, 'options' => [], 'departments' => []];
 
-        Route::view('/', 'portal.dashboard', $shared + ['todayPrints' => []])->name('dashboard');
+        Route::get('/', DashboardController::class)->name('dashboard');
         Route::view('/students', 'portal.students', $shared + ['students' => []])->name('students');
         Route::get('/departments', [DepartmentController::class, 'index'])->name('departments');
         Route::middleware('throttle:30,1')->group(function () {
@@ -102,7 +104,15 @@ foreach (['admin', 'tech'] as $portal) {
         if ($portal === 'admin') {
             Route::get('/users', [UserController::class, 'index'])->name('users');
             Route::post('/users', [UserController::class, 'store'])->middleware('throttle:10,1')->name('users.store');
-            Route::view('/active-users', 'portal.active-users', $shared + ['users' => []])->name('active-users');
+            Route::middleware('throttle:30,1')->group(function () {
+                Route::put('/users/{user}', [UserController::class, 'update'])->name('users.update');
+                Route::post('/users/{user}/deactivate', [UserController::class, 'deactivate'])->name('users.deactivate');
+                Route::post('/users/{user}/reactivate', [UserController::class, 'reactivate'])->name('users.reactivate');
+                Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('users.destroy');
+                Route::post('/active-users/{user}/sign-out', [ActiveUserController::class, 'signOut'])->name('active-users.sign-out');
+            });
+            Route::post('/users/{user}/new-password', [UserController::class, 'sendNewPassword'])->middleware('throttle:10,1')->name('users.new-password');
+            Route::get('/active-users', [ActiveUserController::class, 'index'])->name('active-users');
         }
     });
 }

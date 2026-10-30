@@ -88,8 +88,9 @@
                     </a>
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
-                        <button type="submit" class="btn btn-danger">
-                            <i class="fa-solid fa-right-from-bracket me-1" aria-hidden="true"></i> Sign out
+                        {{-- Small phones show the icon only, so the page title keeps its room. --}}
+                        <button type="submit" class="btn btn-danger" title="Sign out">
+                            <i class="fa-solid fa-right-from-bracket" aria-hidden="true"></i><span class="d-none d-sm-inline ms-1">Sign out</span><span class="visually-hidden d-sm-none">Sign out</span>
                         </button>
                     </form>
                 </div>

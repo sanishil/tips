@@ -457,6 +457,11 @@
         color: #1b5b94;
     }
 
+    .pill-danger {
+        background: #fde2e4;
+        color: #a51d2d;
+    }
+
     /* Row actions: solid square buttons (amber = edit / reset, red = delete / deactivate). */
     .portal .btn-icon-warning,
     .portal .btn-icon-danger {
@@ -671,6 +676,14 @@
         font-weight: 600;
         color: var(--bs-secondary-color);
         white-space: nowrap;
+    }
+
+    /*
+    | Wide tables scroll inside their box, never the page. The box must be positioned too: hidden labels
+    | (e.g. "Actions" in the last heading) are absolutely positioned and would otherwise escape it and widen the page.
+    */
+    .table-responsive {
+        position: relative;
     }
 
     /* Tables look the same everywhere; on narrow screens they scroll sideways. */

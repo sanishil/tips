@@ -681,6 +681,17 @@
     .table > tbody td[colspan] {
         white-space: normal;
     }
+
+    /* Paged tables hide rows, which throws off Bootstrap's :nth-of-type stripes; app.js marks every other shown row instead. */
+    .table-striped[data-per-page] > tbody > tr:nth-of-type(odd) > * {
+        --bs-table-color-type: initial;
+        --bs-table-bg-type: initial;
+    }
+
+    .table-striped[data-per-page] > tbody > tr[data-striped] > * {
+        --bs-table-color-type: var(--bs-table-striped-color);
+        --bs-table-bg-type: var(--bs-table-striped-bg);
+    }
 }
 
 /*

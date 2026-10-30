@@ -20,7 +20,7 @@
     </div>
 
     <div class="table-responsive">
-        <table id="{{ $id }}" class="table table-hover align-middle mb-0" data-per-page="{{ $perPage }}">
+        <table id="{{ $id }}" class="table table-striped table-hover align-middle mb-0" data-per-page="{{ $perPage }}">
             {{ $slot }}
         </table>
     </div>

@@ -35,7 +35,7 @@
                     <a href="{{ route($portal.'.departments') }}" class="small">Manage</a>
                 </div>
                 <div class="table-responsive">
-                    <table class="table align-middle mb-0">
+                    <table class="table table-striped align-middle mb-0">
                         <thead>
                             <tr><th>Department</th><th class="text-end">Students</th><th class="text-end">Teachers</th><th class="text-end">Subjects</th></tr>
                         </thead>
@@ -105,7 +105,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body p-0">
-                    <table class="table align-middle mb-0">
+                    <table class="table table-striped align-middle mb-0">
                         <thead>
                             <tr><th>Time</th><th>College ID</th><th>Name</th><th>Subject</th><th>Type</th></tr>
                         </thead>

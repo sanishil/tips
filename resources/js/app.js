@@ -407,7 +407,9 @@ function filterTable(tableId, page = 1) {
 
     rows.forEach((row) => {
         row.hidden = !onPage.has(row);
+        row.removeAttribute('data-striped');
     });
+    [...onPage].forEach((row, index) => row.toggleAttribute('data-striped', index % 2 === 0));
 
     let noResults = table.querySelector('tr[data-no-results]');
 

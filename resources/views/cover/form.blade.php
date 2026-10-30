@@ -59,7 +59,7 @@
                                 <select id="std_dept" name="std_dept" class="form-select" required data-preview="std_dept">
                                     <option value="">Choose…</option>
                                     @foreach ($departments as $department)
-                                        <option>{{ $department['dept_name'] }}</option>
+                                        <option>{{ $department->dept_name }}</option>
                                     @endforeach
                                 </select>
                                 <x-field-error for="std_dept">Choose your department.</x-field-error>
@@ -70,29 +70,41 @@
                     <section class="form-part">
                         <h2 class="form-part-title"><i class="fa-solid fa-plus" aria-hidden="true"></i> Course and subject</h2>
                         <div class="row g-3">
-                            <div class="col-sm-4">
+                            <div class="col-sm-6">
                                 <label class="form-label" for="course">Course</label>
                                 <select id="course" name="course" class="form-select" required data-preview="course">
                                     <option value="">Choose…</option>
-                                    @foreach ($options['courses'] ?? [] as $course)
-                                        <option>{{ $course }}</option>
+                                    @foreach ($courses as $course)
+                                        <option>{{ $course->name }}</option>
                                     @endforeach
                                 </select>
                                 <x-field-error for="course">Choose your course.</x-field-error>
                             </div>
-                            <div class="col-6 col-sm-4">
+                            <div class="col-sm-6">
+                                <label class="form-label" for="sub_course">Sub-course</label>
+                                <select id="sub_course" name="sub_course" class="form-select" required data-preview="sub_course"
+                                        data-option-filter='{"course":"course"}' data-option-filter-exact data-option-empty-disables>
+                                    <option value="" data-label="Choose…" data-empty="No sub-courses for this course" data-waiting="Choose a course first">Choose…</option>
+                                    @foreach ($subCourses as $subCourse)
+                                        <option data-course="{{ $subCourse->course->name }}">{{ $subCourse->name }}</option>
+                                    @endforeach
+                                </select>
+                                <x-field-error for="sub_course">Choose your sub-course.</x-field-error>
+                            </div>
+                            <div class="col-6">
                                 <label class="form-label" for="sem">Semester</label>
                                 <select id="sem" name="sem" class="form-select" required data-preview="sem">
                                     <option value="">Choose…</option>
-                                    @foreach ($options['semesters'] ?? [] as $semester)
+                                    @foreach ($semesters as $semester)
                                         <option>{{ $semester }}</option>
                                     @endforeach
                                 </select>
                                 <x-field-error for="sem">Choose a semester.</x-field-error>
                             </div>
-                            <div class="col-6 col-sm-4">
+                            <div class="col-6">
                                 <label class="form-label" for="section">Section</label>
                                 <select id="section" name="section" class="form-select" data-preview="section">
+                                    <option value="">Choose…</option>
                                     @foreach ($options['sections'] ?? [] as $section)
                                         <option>{{ $section }}</option>
                                     @endforeach
@@ -118,10 +130,10 @@
                             <div class="col-sm-8">
                                 <label class="form-label" for="subjects">Subject title</label>
                                 <select id="subjects" name="subjects" class="form-select" required data-preview="subject" data-autofill="code"
-                                        data-option-filter='{"dept":"std_dept","course":"course","sem":"sem"}'>
+                                        data-option-filter='{"dept":"std_dept","course":"course","subCourse":"sub_course","sem":"sem"}'>
                                     <option value="" data-label="Choose…" data-empty="No subjects for this course and semester">Choose…</option>
                                     @foreach ($subjects as $subject)
-                                        <option value="{{ $subject['subjects'] }}" data-value="{{ $subject['code'] }}" data-dept="{{ $subject['dept_name'] }}" data-course="{{ $subject['course'] }}" data-sem="{{ $subject['sem'] }}">{{ $subject['subjects'] }}</option>
+                                        <option value="{{ $subject->name }}" data-value="{{ $subject->code }}" data-dept="{{ $subject->department->dept_name }}" data-course="{{ $subject->course->name }}" data-sub-course="{{ $subject->subCourse?->name }}" data-sem="{{ $subject->semester }}">{{ $subject->name }}</option>
                                     @endforeach
                                 </select>
                                 <x-field-error for="subjects">Choose a subject.</x-field-error>
@@ -133,8 +145,8 @@
                             <div class="col-sm-6">
                                 <label class="form-label" for="page_type">This is a…</label>
                                 <select id="page_type" name="page_type" class="form-select" data-preview="page_type">
-                                    @foreach ($options['pageTypes'] ?? [] as $pageType)
-                                        <option>{{ $pageType }}</option>
+                                    @foreach ($assignmentTypes as $assignmentType)
+                                        <option>{{ $assignmentType }}</option>
                                     @endforeach
                                 </select>
                             </div>
@@ -154,7 +166,7 @@
                                 <select id="f_dept" name="f_dept" class="form-select" required data-preview="f_dept">
                                     <option value="">Choose…</option>
                                     @foreach ($departments as $department)
-                                        <option>{{ $department['dept_name'] }}</option>
+                                        <option>{{ $department->dept_name }}</option>
                                     @endforeach
                                 </select>
                                 <x-field-error for="f_dept">Choose the teacher's department.</x-field-error>
@@ -164,7 +176,7 @@
                                 <input id="f_name" name="f_name" class="form-control" list="teacher-list" autocomplete="off" required data-preview="f_name" data-autofill="f_designation">
                                 <datalist id="teacher-list" data-option-filter='{"dept":"f_dept"}'>
                                     @foreach ($teachers as $teacher)
-                                        <option value="{{ $teacher['teacher'] }}" data-value="{{ $teacher['designation'] }}" data-dept="{{ $teacher['dept_name'] }}"></option>
+                                        <option value="{{ $teacher->name }}" data-value="{{ $teacher->designation->name }}" data-dept="{{ $teacher->department->dept_name }}"></option>
                                     @endforeach
                                 </datalist>
                                 <x-field-error for="f_name">Enter or choose the teacher's name.</x-field-error>
@@ -173,7 +185,7 @@
                                 <label class="form-label" for="f_designation">Designation</label>
                                 <input id="f_designation" name="f_designation" class="form-control" list="designation-list" autocomplete="off" required data-preview="f_designation">
                                 <datalist id="designation-list">
-                                    @foreach ($options['designations'] ?? [] as $designation)
+                                    @foreach ($designations as $designation)
                                         <option value="{{ $designation }}"></option>
                                     @endforeach
                                 </datalist>

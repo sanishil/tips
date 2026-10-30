@@ -6,6 +6,8 @@ use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\CoverController;
+use App\Http\Controllers\Portal\AssignmentTypeController;
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\DashboardController;
 use App\Http\Controllers\Portal\DepartmentController;
@@ -17,17 +19,11 @@ use App\Http\Controllers\Portal\TeacherController;
 use Illuminate\Support\Facades\Route;
 
 /*
-| Sign-in, sign-up, password reset and user accounts are real. The cover page and the
-| other portal pages have no data source yet, so they get empty lists and show their
-| "nothing yet" states.
+| Sign-in, sign-up, password reset and user accounts are real. The portal pages without a
+| data source yet get empty lists and show their "nothing yet" states.
 */
 
-Route::view('/', 'cover.form', [
-    'departments' => [],
-    'subjects' => [],
-    'teachers' => [],
-    'options' => [],
-])->middleware('password.changed')->name('cover.form');
+Route::get('/', CoverController::class)->middleware('password.changed')->name('cover.form');
 
 Route::middleware('guest')->group(function () {
     Route::view('/login', 'auth.login')->name('login');
@@ -86,6 +82,12 @@ foreach (['admin', 'tech'] as $portal) {
             Route::post('/sub-courses', [SubCourseController::class, 'store'])->name('sub-courses.store');
             Route::put('/sub-courses/{subCourse}', [SubCourseController::class, 'update'])->name('sub-courses.update');
             Route::delete('/sub-courses/{subCourse}', [SubCourseController::class, 'destroy'])->name('sub-courses.destroy');
+        });
+        Route::get('/assignment-types', [AssignmentTypeController::class, 'index'])->name('assignment-types');
+        Route::middleware('throttle:30,1')->group(function () {
+            Route::post('/assignment-types', [AssignmentTypeController::class, 'store'])->name('assignment-types.store');
+            Route::put('/assignment-types/{assignmentType}', [AssignmentTypeController::class, 'update'])->name('assignment-types.update');
+            Route::delete('/assignment-types/{assignmentType}', [AssignmentTypeController::class, 'destroy'])->name('assignment-types.destroy');
         });
         Route::get('/teachers', [TeacherController::class, 'index'])->name('teachers');
         Route::middleware('throttle:30,1')->group(function () {

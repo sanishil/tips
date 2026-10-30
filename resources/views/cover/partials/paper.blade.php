@@ -37,8 +37,9 @@
             <p class="mb-0">College ID: {!! $field('std_id', '—') !!}</p>
             <p data-preview-row="tu_roll" hidden class="mb-0">University Roll No.: {!! $field('tu_roll', '—') !!}</p>
             <p class="mb-0">Course: {!! $field('course', '—') !!}</p>
+            <p data-preview-row="sub_course" hidden class="mb-0">Sub-course: {!! $field('sub_course', '—') !!}</p>
             <p class="mb-0">Semester: {!! $field('sem', '—') !!}</p>
-            <p class="mb-0">Section: {!! $field('section', 'A') !!}</p>
+            <p class="mb-0">Section: {!! $field('section', '—') !!}</p>
             <p class="fw-bold mb-0">Department of {!! $field('std_dept', 'Department') !!}</p>
             <p class="fw-bold mb-0">{{ $college }}</p>
         </div>

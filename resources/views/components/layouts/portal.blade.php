@@ -9,6 +9,7 @@
         ['route' => 'courses', 'label' => 'Courses', 'icon' => 'fa-graduation-cap'],
         ['route' => 'subjects', 'label' => 'Subjects', 'icon' => 'fa-book'],
         ['route' => 'teachers', 'label' => 'Teachers', 'icon' => 'fa-chalkboard-user'],
+        ['route' => 'assignment-types', 'label' => 'Assignment types', 'icon' => 'fa-file-lines'],
     ];
 
     if ($portal === 'admin') {

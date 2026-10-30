@@ -107,7 +107,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-xmark me-1" aria-hidden="true"></i> Cancel</button>
+                    <button type="button" class="btn btn-danger" data-bs-dismiss="modal"><i class="fa-solid fa-xmark me-1" aria-hidden="true"></i> Cancel</button>
                     <button type="button" class="btn btn-success" data-cropper-save data-busy="Saving…"><i class="fa-solid fa-check me-1" aria-hidden="true"></i> Use this photo</button>
                 </div>
             </div>

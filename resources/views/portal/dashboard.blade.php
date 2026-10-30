@@ -6,14 +6,14 @@
     ];
     $departmentCount = count($departments);
     $figures = [
-        'Students' => [$totals['students'], 'in '.$departmentCount.' '.\Illuminate\Support\Str::plural('department', $departmentCount)],
+        'Students' => [$totals['students'], 'in '.$departmentCount.' '.\Illuminate\Support\Str::plural('department', $departmentCount), 'fa-user-graduate', 'blue'],
         'Teachers' => [$totals['teachers'], match (true) {
             ! $totals['teachers'] => 'none added yet',
             ! $totals['students'] => 'across all departments',
             default => '1 for every '.round($totals['students'] / $totals['teachers']).' students',
-        }],
-        'Subjects' => [$totals['subjects'], 'across all courses'],
-        'Printed today' => [count($todayPrints), $todayPrints ? 'last at '.$todayPrints[0]['time'] : 'nothing yet'],
+        }, 'fa-chalkboard-user', 'green'],
+        'Subjects' => [$totals['subjects'], 'across all courses', 'fa-book', 'purple'],
+        'Printed today' => [count($todayPrints), $todayPrints ? 'last at '.$todayPrints[0]['time'] : 'nothing yet', 'fa-print', 'orange'],
     ];
 @endphp
 
@@ -22,9 +22,9 @@
 
     <section class="card mb-4" aria-label="At a glance">
         <dl class="summary-strip">
-            @foreach ($figures as $label => [$value, $note])
-                <div>
-                    <dt>{{ $label }}</dt>
+            @foreach ($figures as $label => [$value, $note, $icon, $tone])
+                <div class="summary-{{ $tone }}">
+                    <dt><span class="summary-icon"><i class="fa-solid {{ $icon }}" aria-hidden="true"></i></span> {{ $label }}</dt>
                     <dd>{{ number_format($value) }} <small>{{ $note }}</small></dd>
                 </div>
             @endforeach

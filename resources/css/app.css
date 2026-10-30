@@ -505,8 +505,50 @@
     }
 
     .summary-strip > div {
+        --accent: var(--portal-navy);
+        --accent-soft: var(--bs-tertiary-bg);
+
         padding: 1.25rem 1.5rem;
         border-bottom: 1px solid var(--portal-card-line);
+        box-shadow: inset 4px 0 0 var(--accent);
+    }
+
+    /* Each figure has its own colour (from the logo's palette): a bar on the left, the icon tile and the number. */
+    .summary-strip > .summary-blue {
+        --accent: #22609f;
+        --accent-soft: #e3f0fb;
+    }
+
+    .summary-strip > .summary-green {
+        --accent: #157347;
+        --accent-soft: #d9f5e3;
+    }
+
+    .summary-strip > .summary-purple {
+        --accent: #6f4fa0;
+        --accent-soft: #efe8f8;
+    }
+
+    .summary-strip > .summary-orange {
+        --accent: #b4540a;
+        --accent-soft: #fdebd8;
+    }
+
+    /* The left bars sit on the card's rounded corners, so the card clips them. */
+    .card:has(> .summary-strip) {
+        overflow: hidden;
+    }
+
+    .summary-icon {
+        display: inline-grid;
+        place-items: center;
+        width: 2rem;
+        height: 2rem;
+        flex-shrink: 0;
+        border-radius: 0.5rem;
+        font-size: 0.95rem;
+        background: var(--accent-soft);
+        color: var(--accent);
     }
 
     .summary-strip > div:nth-child(odd) {
@@ -518,6 +560,9 @@
     }
 
     .summary-strip dt {
+        display: flex;
+        align-items: center;
+        gap: 0.6rem;
         font-size: 0.875rem;
         font-weight: 700;
         letter-spacing: 0.03em;
@@ -531,7 +576,7 @@
         font-weight: 700;
         line-height: 1.1;
         font-variant-numeric: lining-nums tabular-nums;
-        color: var(--portal-navy);
+        color: var(--accent);
     }
 
     .summary-strip dd small {

@@ -23,7 +23,7 @@
                 {{ $slot }}
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal"><i class="fa-solid fa-xmark me-1" aria-hidden="true"></i> Cancel</button>
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal"><i class="fa-solid fa-xmark me-1" aria-hidden="true"></i> Cancel</button>
                 <button type="submit" data-busy="{{ $busy }}" class="btn btn-{{ $variant }}"><i class="fa-solid {{ $icon }} me-1" aria-hidden="true"></i> {{ $submit }}</button>
             </div>
         </form>

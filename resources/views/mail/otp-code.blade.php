@@ -8,5 +8,6 @@ Here's your code to {{ $action }}:
 It works for {{ \App\Support\EmailOtp::EXPIRES_MINUTES }} minutes. If you didn't ask for it, you can ignore this email.
 
 {{ config('app.name') }}<br>
-Tripura Institute of Paramedical Sciences
+Gomati District Polytechnic<br>
+Fulkumari Part, Tripura 799013
 </x-mail::message>

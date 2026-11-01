@@ -7,14 +7,14 @@ use App\Models\Student;
 use Illuminate\Http\JsonResponse;
 
 /**
- * Student records behind the cover page form: looked up by college ID to fill the form in, and saved when the
- * student prints (updated if the ID is already on file, created if not).
+ * Student records behind the cover page form: looked up by university roll number to fill the form in, and saved
+ * when the student prints (updated if the roll number is already on file, created if not).
  */
 class StudentController extends Controller
 {
-    public function show(string $stdId): JsonResponse
+    public function show(string $tuRoll): JsonResponse
     {
-        $student = Student::with(['department.course', 'department.subCourse'])->where('std_id', $stdId)->firstOrFail();
+        $student = Student::with('department')->where('tu_roll', $tuRoll)->firstOrFail();
 
         return response()->json($student->toCoverForm());
     }
@@ -22,7 +22,7 @@ class StudentController extends Controller
     public function store(SaveStudentRequest $request): JsonResponse
     {
         $student = Student::updateOrCreate(
-            ['std_id' => $request->validated('std_id')],
+            ['tu_roll' => $request->validated('tu_roll')],
             $request->studentAttributes(),
         );
 

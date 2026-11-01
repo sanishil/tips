@@ -307,8 +307,8 @@ document.addEventListener('change', autofill);
 /*
 | <select|datalist data-option-filter='{"dept":"std_dept"}'>: only offer options whose data-dept matches #std_dept.
 | An empty source normally offers everything; with data-option-filter-exact it only offers options whose attribute
-| is empty too (e.g. departments without a sub-course). data-option-empty-disables disables the select while nothing
-| matches, so it's skipped by `required` and isn't submitted (e.g. sub-course for a course that has none).
+| is empty too (e.g. options with no department set). data-option-empty-disables disables the select while nothing
+| matches, so it's skipped by `required` and isn't submitted (e.g. a list with nothing to pick yet).
 | The placeholder reads data-label, data-empty when nothing matches, or data-waiting while every source is empty.
 */
 document.querySelectorAll('select[data-option-filter], datalist[data-option-filter]').forEach((select) => {
@@ -357,10 +357,10 @@ document.querySelectorAll('select[data-option-filter], datalist[data-option-filt
 });
 
 /*
-| <input data-student-lookup="url/00000">: once a full college ID is typed, fetch the saved student (if any) and
-| fill in their details. Course goes before sub-course and department, so each list is narrowed in time.
+| <input data-student-lookup="url/00000">: once a full university roll number is typed, fetch the saved student
+| (if any) and fill in their details. Department and semester go first, so the subject list is narrowed in time.
 */
-const studentFields = ['title', 'name', 'tu_roll', 'course', 'sub_course', 'std_dept', 'sem', 'section'];
+const studentFields = ['title', 'name', 'std_dept', 'sem', 'section'];
 let studentLookup;
 
 document.addEventListener('input', (event) => {
@@ -377,10 +377,10 @@ document.addEventListener('input', (event) => {
     }
 
     studentLookup = setTimeout(async () => {
-        const stdId = field.value;
-        const response = await fetch(field.dataset.studentLookup.replace(/00000$/, stdId), { headers: { Accept: 'application/json' } }).catch(() => null);
+        const tuRoll = field.value;
+        const response = await fetch(field.dataset.studentLookup.replace(/00000$/, encodeURIComponent(tuRoll)), { headers: { Accept: 'application/json' } }).catch(() => null);
 
-        if (!response?.ok || field.value !== stdId) {
+        if (!response?.ok || field.value !== tuRoll) {
             return;
         }
 
@@ -594,7 +594,7 @@ document.addEventListener('show.bs.modal', (event) => {
         });
     }
 
-    /* Filling a field doesn't fire `change`, so re-narrow dependent lists (e.g. sub-courses) to the filled values. */
+    /* Filling a field doesn't fire `change`, so re-narrow dependent lists (e.g. departments) to the filled values. */
     modal.querySelectorAll('[data-option-filter]').forEach((select) => select.dispatchEvent(new Event('refresh')));
 });
 
@@ -642,7 +642,7 @@ function setBusy(button, busy) {
 }
 
 /*
-| The cover page form saves the student's details (updated if the college ID is on file, added if not), then prints.
+| The cover page form saves the student's details (updated if the roll number is on file, added if not), then prints.
 | A field the server rejects is marked and nothing prints; if the save can't be reached, it still prints.
 */
 async function saveThenPrint(form, button) {

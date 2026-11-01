@@ -32,15 +32,11 @@
                     <section class="form-part">
                         <h2 class="form-part-title"><i class="fa-solid fa-plus" aria-hidden="true"></i> Student details</h2>
                         <div class="row g-3">
-                            <div class="col-sm-6">
-                                <label class="form-label" for="std_id">College ID</label>
-                                <input id="std_id" name="std_id" class="form-control" inputmode="numeric" pattern="\d{5,15}" maxlength="15" required data-preview="std_id"
-                                       data-student-lookup="{{ route('cover.students.show', ['stdId' => '00000']) }}">
-                                <x-field-error for="std_id">Enter your college ID (numbers only).</x-field-error>
-                            </div>
-                            <div class="col-sm-6">
-                                <label class="form-label" for="tu_roll">University roll no. <span class="intake-muted fw-normal">(optional)</span></label>
-                                <input id="tu_roll" name="tu_roll" class="form-control" data-preview="tu_roll">
+                            <div class="col-12">
+                                <label class="form-label" for="tu_roll">University roll no.</label>
+                                <input id="tu_roll" name="tu_roll" class="form-control" pattern="{{ \App\Http\Requests\SaveStudentRequest::ROLL_PATTERN }}" maxlength="30" autocomplete="off" required data-preview="tu_roll"
+                                       data-student-lookup="{{ route('cover.students.show', ['tuRoll' => '00000']) }}">
+                                <x-field-error for="tu_roll">Enter your university roll number.</x-field-error>
                             </div>
                             <div class="col-4 col-sm-3">
                                 <label class="form-label" for="title">Title</label>
@@ -59,36 +55,14 @@
                     </section>
 
                     <section class="form-part">
-                        <h2 class="form-part-title"><i class="fa-solid fa-plus" aria-hidden="true"></i> Course and subject</h2>
+                        <h2 class="form-part-title"><i class="fa-solid fa-plus" aria-hidden="true"></i> Department and subject</h2>
                         <div class="row g-3">
-                            <div class="col-sm-6">
-                                <label class="form-label" for="course">Course</label>
-                                <select id="course" name="course" class="form-select" required data-preview="course">
-                                    <option value="">Choose…</option>
-                                    @foreach ($courses as $course)
-                                        <option>{{ $course->name }}</option>
-                                    @endforeach
-                                </select>
-                                <x-field-error for="course">Choose your course.</x-field-error>
-                            </div>
-                            <div class="col-sm-6">
-                                <label class="form-label" for="sub_course">Sub-course</label>
-                                <select id="sub_course" name="sub_course" class="form-select" required data-preview="sub_course"
-                                        data-option-filter='{"course":"course"}' data-option-filter-exact data-option-empty-disables>
-                                    <option value="" data-label="Choose…" data-empty="No sub-courses for this course" data-waiting="Choose a course first">Choose…</option>
-                                    @foreach ($subCourses as $subCourse)
-                                        <option data-course="{{ $subCourse->course->name }}">{{ $subCourse->name }}</option>
-                                    @endforeach
-                                </select>
-                                <x-field-error for="sub_course">Choose your sub-course.</x-field-error>
-                            </div>
                             <div class="col-12">
                                 <label class="form-label" for="std_dept">Department</label>
-                                <select id="std_dept" name="std_dept" class="form-select" required data-preview="std_dept"
-                                        data-option-filter='{"course":"course","subCourse":"sub_course"}' data-option-filter-exact>
-                                    <option value="" data-label="Choose…" data-empty="No departments for this course and sub-course" data-waiting="Choose a course first">Choose…</option>
+                                <select id="std_dept" name="std_dept" class="form-select" required data-preview="std_dept">
+                                    <option value="">Choose…</option>
                                     @foreach ($departments as $department)
-                                        <option data-course="{{ $department->course?->name }}" data-sub-course="{{ $department->subCourse?->name }}">{{ $department->dept_name }}</option>
+                                        <option>{{ $department->dept_name }}</option>
                                     @endforeach
                                 </select>
                                 <x-field-error for="std_dept">Choose your department.</x-field-error>
@@ -120,22 +94,13 @@
                                 <label class="form-label" for="topic">Topic <span class="intake-muted fw-normal">(optional)</span></label>
                                 <input id="topic" name="topic" class="form-control" data-preview="topic">
                             </div>
-                            <div class="col-12">
-                                <label class="form-label" for="ward">Ward <span class="intake-muted fw-normal">(optional)</span></label>
-                                <input id="ward" name="ward" class="form-control" list="ward-list" autocomplete="off" data-preview="ward" placeholder="Choose or type a ward">
-                                <datalist id="ward-list">
-                                    @foreach ($options['wards'] ?? [] as $ward)
-                                        <option value="{{ $ward }}"></option>
-                                    @endforeach
-                                </datalist>
-                            </div>
                             <div class="col-sm-8">
                                 <label class="form-label" for="subjects">Subject title</label>
                                 <select id="subjects" name="subjects" class="form-select" required data-preview="subject" data-autofill="code"
-                                        data-option-filter='{"dept":"std_dept","course":"course","subCourse":"sub_course","sem":"sem"}'>
-                                    <option value="" data-label="Choose…" data-empty="No subjects for this course and semester">Choose…</option>
+                                        data-option-filter='{"dept":"std_dept","sem":"sem"}'>
+                                    <option value="" data-label="Choose…" data-empty="No subjects for this department and semester">Choose…</option>
                                     @foreach ($subjects as $subject)
-                                        <option value="{{ $subject->name }}" data-value="{{ $subject->code }}" data-dept="{{ $subject->department->dept_name }}" data-course="{{ $subject->course->name }}" data-sub-course="{{ $subject->subCourse?->name }}" data-sem="{{ $subject->semester }}">{{ $subject->name }}</option>
+                                        <option value="{{ $subject->name }}" data-value="{{ $subject->code }}" data-dept="{{ $subject->department->dept_name }}" data-sem="{{ $subject->semester }}">{{ $subject->name }}</option>
                                     @endforeach
                                 </select>
                                 <x-field-error for="subjects">Choose a subject.</x-field-error>

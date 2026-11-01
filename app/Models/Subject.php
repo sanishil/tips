@@ -9,11 +9,10 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 /**
- * A subject taught in one semester of a course, run by a department (e.g. NUR-302 in UG → Nursing, semester 3).
- * The sub-course is only set when the course has sub-courses; a course without any (e.g. PG) leaves it empty.
- * Students only see the subjects for their own department, course, sub-course and semester.
+ * A subject taught by a department in one semester (e.g. CE-302 in Civil Engineering, semester 3).
+ * Students only see the subjects for their own department and semester.
  */
-#[Fillable(['department_id', 'course_id', 'sub_course_id', 'semester', 'name', 'code'])]
+#[Fillable(['department_id', 'semester', 'name', 'code'])]
 class Subject extends Model
 {
     /** @use HasFactory<SubjectFactory> */
@@ -40,21 +39,5 @@ class Subject extends Model
     public function department(): BelongsTo
     {
         return $this->belongsTo(Department::class);
-    }
-
-    /**
-     * @return BelongsTo<Course, $this>
-     */
-    public function course(): BelongsTo
-    {
-        return $this->belongsTo(Course::class);
-    }
-
-    /**
-     * @return BelongsTo<SubCourse, $this>
-     */
-    public function subCourse(): BelongsTo
-    {
-        return $this->belongsTo(SubCourse::class);
     }
 }

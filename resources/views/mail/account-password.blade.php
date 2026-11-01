@@ -18,5 +18,6 @@ Sign in
 Once you're in, we'll ask you to choose a password of your own.
 
 {{ config('app.name') }}<br>
-Tripura Institute of Paramedical Sciences
+Gomati District Polytechnic<br>
+Fulkumari Part, Tripura 799013
 </x-mail::message>

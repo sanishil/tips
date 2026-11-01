@@ -12,7 +12,7 @@
             ! $totals['students'] => 'across all departments',
             default => '1 for every '.round($totals['students'] / $totals['teachers']).' students',
         }, 'fa-chalkboard-user', 'green'],
-        'Subjects' => [$totals['subjects'], 'across all courses', 'fa-book', 'purple'],
+        'Subjects' => [$totals['subjects'], 'across all departments', 'fa-book', 'purple'],
         'Printed today' => [count($todayPrints), $todayPrints ? 'last at '.$todayPrints[0]['time'] : 'nothing yet', 'fa-print', 'orange'],
     ];
 @endphp
@@ -111,13 +111,13 @@
                 <div class="modal-body p-0">
                     <table class="table table-striped align-middle mb-0">
                         <thead>
-                            <tr><th>Time</th><th>College ID</th><th>Name</th><th>Subject</th><th>Type</th></tr>
+                            <tr><th>Time</th><th>Roll no.</th><th>Name</th><th>Subject</th><th>Type</th></tr>
                         </thead>
                         <tbody>
                             @foreach ($todayPrints as $print)
                                 <tr>
                                     <td class="tw:tabular-nums">{{ $print['time'] }}</td>
-                                    <td class="font-monospace">{{ $print['std_id'] }}</td>
+                                    <td class="font-monospace">{{ $print['tu_roll'] }}</td>
                                     <td>{{ $print['name'] }}</td>
                                     <td>{{ $print['subject'] }}</td>
                                     <td>{{ $print['page_type'] }}</td>

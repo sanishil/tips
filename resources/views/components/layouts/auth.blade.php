@@ -18,9 +18,9 @@
                     <div class="auth-sheet auth-sheet-back"></div>
                     <div class="auth-sheet">
                         <p class="fw-bold mb-0">Assignment</p>
-                        <p class="auth-sheet-college fw-bold mb-0">Tripura Institute of Paramedical Sciences</p>
+                        <p class="auth-sheet-college fw-bold mb-0">Gomati District Polytechnic</p>
                         <img src="{{ asset('img/logo.webp') }}" alt="">
-                        <p class="fw-bold text-uppercase mb-0">Agartala, Tripura</p>
+                        <p class="fw-bold text-uppercase mb-0">Fulkumari Part, Tripura 799013</p>
                         <p class="mb-0"><strong>Subject Title:</strong> Human Anatomy</p>
                         <p class="mb-0"><strong>Subject Code:</strong> MLT-101</p>
                         <span class="auth-sheet-lines"><i></i><i></i><i></i></span>

@@ -46,11 +46,6 @@ class StoreDepartmentRequest extends FormRequest
                 "regex:/^[\pL\pM][\pL\pM\s&.,()\/'-]*$/u",
                 Rule::unique('departments', 'dept_name')->ignore($this->route('department')),
             ],
-            'course_id' => ['required', 'integer', Rule::exists('courses', 'id')],
-            'sub_course_id' => [
-                'nullable', 'integer',
-                Rule::exists('sub_courses', 'id')->where('course_id', $this->integer('course_id')),
-            ],
         ];
     }
 
@@ -65,11 +60,6 @@ class StoreDepartmentRequest extends FormRequest
             'dept_name.max' => 'Keep the name under 100 characters.',
             'dept_name.regex' => 'Use letters and spaces only (& . , ( ) / - are fine too).',
             'dept_name.unique' => 'There is already a department with this name.',
-            'course_id.required' => 'Choose the course.',
-            'course_id.integer' => 'Choose the course.',
-            'course_id.exists' => 'That course no longer exists. Choose another.',
-            'sub_course_id.integer' => 'Choose a sub-course, or leave it blank.',
-            'sub_course_id.exists' => 'Choose a sub-course of the selected course, or leave it blank.',
         ];
     }
 }

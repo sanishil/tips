@@ -21,8 +21,7 @@ class StudentFactory extends Factory
     public function definition(): array
     {
         return [
-            'std_id' => fake()->unique()->numerify('##########'),
-            'tu_roll' => null,
+            'tu_roll' => fake()->unique()->numerify('##########'),
             'title' => fake()->randomElement(CoverController::TITLES),
             'name' => fake()->name(),
             'department_id' => Department::factory(),

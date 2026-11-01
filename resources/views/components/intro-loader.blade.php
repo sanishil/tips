@@ -1,4 +1,4 @@
-@props(['name' => 'Tripura Institute of Paramedical Sciences', 'subtitle' => 'Assignment cover pages'])
+@props(['name' => 'Gomati District Polytechnic', 'subtitle' => 'Assignment cover pages'])
 
 {{-- Played by resources/js/app.js on page load, and again when a [data-intro-replay] link is clicked. --}}
 <div class="intro-loader" data-intro aria-hidden="true">

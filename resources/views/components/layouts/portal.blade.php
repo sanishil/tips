@@ -6,7 +6,6 @@
         ['route' => 'students', 'label' => 'Students', 'icon' => 'fa-user-graduate'],
         ['route' => 'departments', 'label' => 'Departments', 'icon' => 'fa-building-columns'],
         ['route' => 'designations', 'label' => 'Designations', 'icon' => 'fa-id-badge'],
-        ['route' => 'courses', 'label' => 'Courses', 'icon' => 'fa-graduation-cap'],
         ['route' => 'subjects', 'label' => 'Subjects', 'icon' => 'fa-book'],
         ['route' => 'teachers', 'label' => 'Teachers', 'icon' => 'fa-chalkboard-user'],
         ['route' => 'assignment-types', 'label' => 'Assignment types', 'icon' => 'fa-file-lines'],
@@ -38,8 +37,8 @@
         <a href="{{ route($portal.'.dashboard') }}" class="portal-banner-brand">
             <img src="{{ asset('img/logo.webp') }}" alt="" aria-hidden="true">
             <span>
-                <span class="portal-banner-name">Tripura Institute of Paramedical Sciences</span>
-                <span class="portal-banner-tagline">Agartala, Tripura · Assignment cover pages</span>
+                <span class="portal-banner-name">Gomati District Polytechnic</span>
+                <span class="portal-banner-tagline">Fulkumari Part, Tripura 799013 · Assignment cover pages</span>
             </span>
         </a>
         <span class="portal-banner-date d-none d-md-block">{{ now()->format('l, j F Y') }}</span>
@@ -52,7 +51,7 @@
                 <div class="portal-sidebar-brand">
                     <img src="{{ asset('img/logo.webp') }}" alt="" aria-hidden="true">
                     <span class="nav-label">
-                        <strong>TIPS {{ $portal === 'admin' ? 'Admin' : 'Tech' }}</strong>
+                        <strong>GDP {{ $portal === 'admin' ? 'Admin' : 'Tech' }}</strong>
                         <small>Control panel</small>
                     </span>
                     <button type="button" class="btn-close btn-close-white ms-auto d-lg-none" data-bs-dismiss="offcanvas" data-bs-target="#sidebar" aria-label="Close menu"></button>

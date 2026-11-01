@@ -2,9 +2,7 @@
 
 namespace Database\Factories;
 
-use App\Models\Course;
 use App\Models\Department;
-use App\Models\SubCourse;
 use App\Models\Subject;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
@@ -24,21 +22,9 @@ class SubjectFactory extends Factory
 
         return [
             'department_id' => Department::factory(),
-            'sub_course_id' => SubCourse::factory(),
-            'course_id' => fn (array $attributes): int|CourseFactory => $attributes['sub_course_id'] !== null
-                ? SubCourse::findOrFail($attributes['sub_course_id'])->course_id
-                : Course::factory(),
             'semester' => $semester,
             'name' => ucfirst(fake()->unique()->words(3, true)),
             'code' => strtoupper(fake()->unique()->lexify('???')).'-'.$semester.fake()->numerify('##'),
         ];
-    }
-
-    /**
-     * A subject of a course that has no sub-courses (e.g. PG).
-     */
-    public function withoutSubCourse(): static
-    {
-        return $this->state(fn (): array => ['sub_course_id' => null]);
     }
 }

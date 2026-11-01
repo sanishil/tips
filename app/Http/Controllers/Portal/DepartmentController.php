@@ -5,18 +5,15 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreDepartmentRequest;
 use App\Http\Requests\UpdateDepartmentRequest;
-use App\Models\Course;
 use App\Models\Department;
-use App\Models\SubCourse;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 /**
- * Departments, managed from both portals (/admin/departments and /tech/departments). Each runs under
- * a course and, optionally, one of its sub-courses. The role middleware on those routes guarantees
- * the user's role matches the portal.
+ * Departments, managed from both portals (/admin/departments and /tech/departments). The role
+ * middleware on those routes guarantees the user's role matches the portal.
  */
 class DepartmentController extends Controller
 {
@@ -24,9 +21,7 @@ class DepartmentController extends Controller
     {
         return view('portal.departments', [
             'portal' => $request->user()->role->value,
-            'departments' => Department::with(['course', 'subCourse'])->withCount(['teachers', 'subjects'])->orderBy('dept_name')->get(),
-            'courses' => Course::orderBy('name')->get(['id', 'name']),
-            'subCourses' => SubCourse::orderBy('name')->get(['id', 'course_id', 'name']),
+            'departments' => Department::withCount(['teachers', 'subjects'])->orderBy('dept_name')->get(),
         ]);
     }
 

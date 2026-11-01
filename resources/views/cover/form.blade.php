@@ -27,14 +27,15 @@
 
         <div class="row g-4 g-xl-5">
             <div class="col-lg-7">
-                <form method="POST" class="brand-form" data-print-form novalidate>
+                <form method="POST" action="{{ route('cover.students.store') }}" class="brand-form" data-print-form novalidate>
                     @csrf
                     <section class="form-part">
                         <h2 class="form-part-title"><i class="fa-solid fa-plus" aria-hidden="true"></i> Student details</h2>
                         <div class="row g-3">
                             <div class="col-sm-6">
                                 <label class="form-label" for="std_id">College ID</label>
-                                <input id="std_id" name="std_id" class="form-control" inputmode="numeric" pattern="\d{5,10}" required data-preview="std_id">
+                                <input id="std_id" name="std_id" class="form-control" inputmode="numeric" pattern="\d{5,15}" maxlength="15" required data-preview="std_id"
+                                       data-student-lookup="{{ route('cover.students.show', ['stdId' => '00000']) }}">
                                 <x-field-error for="std_id">Enter your college ID (numbers only).</x-field-error>
                             </div>
                             <div class="col-sm-6">
@@ -53,16 +54,6 @@
                                 <label class="form-label" for="name">Full name</label>
                                 <input id="name" name="name" class="form-control" autocomplete="name" required data-preview="name">
                                 <x-field-error for="name">Enter your name as it appears on your ID card.</x-field-error>
-                            </div>
-                            <div class="col-12">
-                                <label class="form-label" for="std_dept">Department</label>
-                                <select id="std_dept" name="std_dept" class="form-select" required data-preview="std_dept">
-                                    <option value="">Choose…</option>
-                                    @foreach ($departments as $department)
-                                        <option>{{ $department->dept_name }}</option>
-                                    @endforeach
-                                </select>
-                                <x-field-error for="std_dept">Choose your department.</x-field-error>
                             </div>
                         </div>
                     </section>
@@ -90,6 +81,17 @@
                                     @endforeach
                                 </select>
                                 <x-field-error for="sub_course">Choose your sub-course.</x-field-error>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label" for="std_dept">Department</label>
+                                <select id="std_dept" name="std_dept" class="form-select" required data-preview="std_dept"
+                                        data-option-filter='{"course":"course","subCourse":"sub_course"}' data-option-filter-exact>
+                                    <option value="" data-label="Choose…" data-empty="No departments for this course and sub-course" data-waiting="Choose a course first">Choose…</option>
+                                    @foreach ($departments as $department)
+                                        <option data-course="{{ $department->course?->name }}" data-sub-course="{{ $department->subCourse?->name }}">{{ $department->dept_name }}</option>
+                                    @endforeach
+                                </select>
+                                <x-field-error for="std_dept">Choose your department.</x-field-error>
                             </div>
                             <div class="col-6">
                                 <label class="form-label" for="sem">Semester</label>

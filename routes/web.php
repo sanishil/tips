@@ -16,6 +16,7 @@ use App\Http\Controllers\Portal\ProfileController;
 use App\Http\Controllers\Portal\SubCourseController;
 use App\Http\Controllers\Portal\SubjectController;
 use App\Http\Controllers\Portal\TeacherController;
+use App\Http\Controllers\StudentController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,6 +25,10 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', CoverController::class)->middleware('password.changed')->name('cover.form');
+Route::middleware(['password.changed', 'throttle:30,1'])->group(function () {
+    Route::get('/students/{stdId}', [StudentController::class, 'show'])->where('stdId', '\d{5,15}')->name('cover.students.show');
+    Route::post('/students', [StudentController::class, 'store'])->name('cover.students.store');
+});
 
 Route::middleware('guest')->group(function () {
     Route::view('/login', 'auth.login')->name('login');

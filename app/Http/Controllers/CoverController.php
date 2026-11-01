@@ -31,7 +31,7 @@ class CoverController extends Controller
     public function __invoke(): View
     {
         return view('cover.form', [
-            'departments' => Department::orderBy('dept_name')->get(['id', 'dept_name']),
+            'departments' => Department::with(['course', 'subCourse'])->orderBy('dept_name')->get(),
             'courses' => Course::orderBy('name')->get(['id', 'name']),
             'subCourses' => SubCourse::with('course')->orderBy('name')->get(),
             'semesters' => range(1, Subject::MAX_SEMESTER),

@@ -356,6 +356,56 @@ document.querySelectorAll('select[data-option-filter], datalist[data-option-filt
     update();
 });
 
+/*
+| <input data-student-lookup="url/00000">: once a full college ID is typed, fetch the saved student (if any) and
+| fill in their details. Course goes before sub-course and department, so each list is narrowed in time.
+*/
+const studentFields = ['title', 'name', 'tu_roll', 'course', 'sub_course', 'std_dept', 'sem', 'section'];
+let studentLookup;
+
+document.addEventListener('input', (event) => {
+    const field = event.target;
+
+    if (!field.dataset?.studentLookup) {
+        return;
+    }
+
+    clearTimeout(studentLookup);
+
+    if (!new RegExp(`^(?:${field.pattern})$`).test(field.value)) {
+        return;
+    }
+
+    studentLookup = setTimeout(async () => {
+        const stdId = field.value;
+        const response = await fetch(field.dataset.studentLookup.replace(/00000$/, stdId), { headers: { Accept: 'application/json' } }).catch(() => null);
+
+        if (!response?.ok || field.value !== stdId) {
+            return;
+        }
+
+        const student = await response.json();
+
+        studentFields.forEach((name) => {
+            const input = field.form.elements[name];
+
+            if (!input || input.disabled) {
+                return;
+            }
+
+            input.value = student[name] ?? '';
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+        });
+
+        field.form.classList.remove('was-validated');
+        toast('Welcome back! Your details are filled in.');
+    }, 400);
+});
+
+/* Fill the preview from what the form starts with: defaults like "This is a…", or values the browser restored. */
+document.querySelectorAll('[data-preview]').forEach((field) => field.dispatchEvent(new Event('input', { bubbles: true })));
+
 document.addEventListener('reset', (event) => {
     event.target.classList.remove('was-validated');
 
@@ -591,6 +641,48 @@ function setBusy(button, busy) {
     }
 }
 
+/*
+| The cover page form saves the student's details (updated if the college ID is on file, added if not), then prints.
+| A field the server rejects is marked and nothing prints; if the save can't be reached, it still prints.
+*/
+async function saveThenPrint(form, button) {
+    form.dataset.submitting = 'true';
+    setBusy(button, true);
+
+    const response = await fetch(form.action, {
+        method: 'POST',
+        headers: { Accept: 'application/json' },
+        body: new FormData(form),
+    }).catch(() => null);
+
+    delete form.dataset.submitting;
+    setBusy(button, false);
+
+    if (response?.status === 422) {
+        const { errors } = await response.json();
+
+        Object.entries(errors).forEach(([name, messages]) => {
+            const input = form.elements[name];
+            const feedback = input?.parentElement.querySelector('.invalid-feedback');
+
+            input?.classList.add('is-invalid');
+
+            if (feedback) {
+                feedback.textContent = messages[0];
+            }
+        });
+
+        form.querySelector('.is-invalid')?.focus();
+        return;
+    }
+
+    if (!response?.ok) {
+        toast("Couldn't save your details, but you can still print.", 'error');
+    }
+
+    await printCoverPage();
+}
+
 document.addEventListener('submit', (event) => {
     const form = event.target;
 
@@ -614,7 +706,7 @@ document.addEventListener('submit', (event) => {
 
     if (form.matches('[data-print-form]')) {
         event.preventDefault();
-        window.print();
+        saveThenPrint(form, event.submitter);
         return;
     }
 
@@ -863,26 +955,29 @@ document.addEventListener('hidden.bs.modal', (event) => {
     cropper = null;
 });
 
-/* Printing: copy the live preview into a top-level element (see app.css). */
-window.addEventListener('beforeprint', () => {
-    const paper = document.getElementById('contentToPrint');
+/*
+| Printing: a copy of the preview sits in a top-level element (see app.css) from page load, so its logo has loaded
+| long before printing. The preview updates fill it in too, since they match every [data-preview-target].
+*/
+const paperToPrint = document.getElementById('contentToPrint');
 
-    if (!paper) {
-        return;
-    }
+if (paperToPrint) {
+    const root = document.createElement('div');
+    root.id = 'print-root';
 
-    let root = document.getElementById('print-root');
-
-    if (!root) {
-        root = document.createElement('div');
-        root.id = 'print-root';
-        document.body.append(root);
-    }
-
-    const copy = paper.cloneNode(true);
+    const copy = paperToPrint.cloneNode(true);
     copy.removeAttribute('id');
-    root.replaceChildren(copy);
-});
+    root.append(copy);
+    document.body.append(root);
+}
+
+/* Wait for the copy's images (the logo) to be ready, then open the print dialog. */
+async function printCoverPage() {
+    const images = document.querySelectorAll('#print-root img');
+
+    await Promise.all([...images].map((image) => image.decode().catch(() => null)));
+    window.print();
+}
 
 /* Toasts ------------------------------------------------------------------ */
 

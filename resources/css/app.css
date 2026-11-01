@@ -1275,9 +1275,12 @@
         display: block;
     }
 
+    /* A hair under A4, so rounding never spills a blank second page into the PDF. */
     #print-root > .cover-paper {
         width: 210mm;
-        height: 297mm;
+        height: 296mm;
+        overflow: hidden;
+        break-inside: avoid;
         border-radius: 0 !important;
         box-shadow: none !important;
         print-color-adjust: exact;

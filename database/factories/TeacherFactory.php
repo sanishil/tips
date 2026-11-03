@@ -21,8 +21,19 @@ class TeacherFactory extends Factory
     {
         return [
             'department_id' => Department::factory(),
-            'designation_id' => Designation::factory(),
             'name' => 'Dr. '.fake()->firstName().' '.fake()->lastName(),
         ];
+    }
+
+    /**
+     * Give every teacher a designation unless the test attached its own (with hasAttached).
+     */
+    public function configure(): static
+    {
+        return $this->afterCreating(function (Teacher $teacher): void {
+            if ($teacher->designations()->doesntExist()) {
+                $teacher->designations()->attach(Designation::factory()->create());
+            }
+        });
     }
 }

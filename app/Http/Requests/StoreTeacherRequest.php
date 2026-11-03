@@ -49,7 +49,8 @@ class StoreTeacherRequest extends FormRequest
                     ->where('department_id', $this->integer('department_id'))
                     ->ignore($this->route('teacher')),
             ],
-            'designation_id' => ['required', 'integer', Rule::exists('designations', 'id')],
+            'designation_ids' => ['required', 'array'],
+            'designation_ids.*' => ['integer', 'distinct', Rule::exists('designations', 'id')],
         ];
     }
 
@@ -67,9 +68,11 @@ class StoreTeacherRequest extends FormRequest
             'name.max' => 'Keep the name under 100 characters.',
             'name.regex' => 'Use letters, spaces, full stops and hyphens only, e.g. Dr. A. Debnath.',
             'name.unique' => 'This teacher is already listed in that department.',
-            'designation_id.required' => 'Choose the teacher\'s designation.',
-            'designation_id.integer' => 'Choose the teacher\'s designation.',
-            'designation_id.exists' => 'That designation no longer exists. Choose another.',
+            'designation_ids.required' => 'Choose at least one designation.',
+            'designation_ids.array' => 'Choose at least one designation.',
+            'designation_ids.*.integer' => 'Choose designations from the list.',
+            'designation_ids.*.distinct' => 'Choose each designation only once.',
+            'designation_ids.*.exists' => 'A chosen designation no longer exists. Choose again.',
         ];
     }
 }

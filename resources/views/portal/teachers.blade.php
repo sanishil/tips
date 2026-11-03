@@ -30,16 +30,21 @@
         </x-slot:filters>
 
         <thead>
-            <tr><th>Name</th><th>Designation</th><th>Department</th><th data-export-skip><span class="visually-hidden">Actions</span></th></tr>
+            <tr><th>Name</th><th>Designations</th><th>Department</th><th data-export-skip><span class="visually-hidden">Actions</span></th></tr>
         </thead>
         <tbody>
             @forelse ($teachers as $teacher)
                 <tr data-dept="{{ $teacher->department->dept_name }}">
                     <td class="fw-semibold">{{ $teacher->name }}</td>
-                    <td>{{ $teacher->designation->name }}</td>
+                    <td>{{ $teacher->designationTitle() }}</td>
                     <td>{{ $teacher->department->dept_name }}</td>
                     <x-row-actions
-                        :record="['teacher_id' => $teacher->id, 'name' => $teacher->name, 'designation_id' => (string) $teacher->designation_id, 'department_id' => (string) $teacher->department_id]"
+                        :record="[
+                            'teacher_id' => $teacher->id,
+                            'name' => $teacher->name,
+                            'designation_ids[]' => $teacher->designations->map(fn ($designation): string => (string) $designation->id)->all(),
+                            'department_id' => (string) $teacher->department_id,
+                        ]"
                         :label="$teacher->name"
                         edit="edit-teacher"
                         delete="delete-teacher"
@@ -72,34 +77,35 @@
                 <input id="{{ $mode }}_teacher_name" name="name" @class(['form-control', 'is-invalid' => $bagErrors->has('name')]) required minlength="2" maxlength="100" value="{{ $bagErrors->any() ? old('name') : '' }}">
                 <x-field-error for="name" :bag="$dialog['bag']">Enter the teacher's name, including Dr. if they use it.</x-field-error>
             </div>
-            <div class="row g-3">
-                <div class="col-sm-6">
-                    <label class="form-label" for="{{ $mode }}_designation">Designation</label>
-                    <select id="{{ $mode }}_designation" name="designation_id" @class(['form-select', 'is-invalid' => $bagErrors->has('designation_id')]) required>
-                        <option value="">Choose…</option>
-                        @foreach ($designations as $designation)
-                            <option value="{{ $designation->id }}" @selected($bagErrors->any() && (string) old('designation_id') === (string) $designation->id)>{{ $designation->name }}</option>
-                        @endforeach
-                    </select>
-                    <x-field-error for="designation_id" :bag="$dialog['bag']">Choose the teacher's designation.</x-field-error>
-                    @if ($designations->isEmpty())
-                        <div class="form-text">No designations yet. <a href="{{ route($portal.'.designations') }}">Add one first</a>.</div>
-                    @endif
-                </div>
-                <div class="col-sm-6">
-                    <label class="form-label" for="{{ $mode }}_teacher_dept">Department</label>
-                    <select id="{{ $mode }}_teacher_dept" name="department_id" @class(['form-select', 'is-invalid' => $bagErrors->has('department_id')]) required>
-                        <option value="">Choose…</option>
-                        @foreach ($departments as $department)
-                            <option value="{{ $department->id }}" @selected($bagErrors->any() && (string) old('department_id') === (string) $department->id)>{{ $department->dept_name }}</option>
-                        @endforeach
-                    </select>
-                    <x-field-error for="department_id" :bag="$dialog['bag']">Choose the teacher's department.</x-field-error>
-                    @if ($departments->isEmpty())
-                        <div class="form-text">No departments yet. <a href="{{ route($portal.'.departments') }}">Add one first</a>.</div>
-                    @endif
-                </div>
+            <div>
+                <label class="form-label" for="{{ $mode }}_teacher_dept">Department</label>
+                <select id="{{ $mode }}_teacher_dept" name="department_id" @class(['form-select', 'is-invalid' => $bagErrors->has('department_id')]) required>
+                    <option value="">Choose…</option>
+                    @foreach ($departments as $department)
+                        <option value="{{ $department->id }}" @selected($bagErrors->any() && (string) old('department_id') === (string) $department->id)>{{ $department->dept_name }}</option>
+                    @endforeach
+                </select>
+                <x-field-error for="department_id" :bag="$dialog['bag']">Choose the teacher's department.</x-field-error>
+                @if ($departments->isEmpty())
+                    <div class="form-text">No departments yet. <a href="{{ route($portal.'.departments') }}">Add one first</a>.</div>
+                @endif
             </div>
+            <fieldset>
+                <legend class="form-label fs-6 mb-2">Designations <span class="text-body-secondary fw-normal">(tick all that apply)</span></legend>
+                <div @class(['border rounded px-3 py-2 overflow-auto tw:max-h-48', 'border-danger' => $bagErrors->has('designation_ids*')])>
+                    @forelse ($designations as $designation)
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" name="designation_ids[]" value="{{ $designation->id }}" id="{{ $mode }}_designation_{{ $designation->id }}"
+                                   @checked($bagErrors->any() && in_array((string) $designation->id, array_map('strval', (array) old('designation_ids', [])), true))>
+                            <label class="form-check-label" for="{{ $mode }}_designation_{{ $designation->id }}">{{ $designation->name }}</label>
+                        </div>
+                    @empty
+                        <p class="small text-body-secondary mb-0">No designations yet. <a href="{{ route($portal.'.designations') }}">Add one first</a>.</p>
+                    @endforelse
+                </div>
+                <x-field-error for="designation_ids*" :bag="$dialog['bag']">Choose at least one designation.</x-field-error>
+                <div class="form-text">Several are joined on the cover page, e.g. “Lecturer(SG-I) & Principal (i/c)”.</div>
+            </fieldset>
         </x-modal>
     @endforeach
 

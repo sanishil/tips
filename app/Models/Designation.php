@@ -6,7 +6,7 @@ use Database\Factories\DesignationFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 /**
  * A teacher's post (e.g. Assistant Professor), printed under their name on the cover page.
@@ -18,10 +18,10 @@ class Designation extends Model
     use HasFactory;
 
     /**
-     * @return HasMany<Teacher, $this>
+     * @return BelongsToMany<Teacher, $this>
      */
-    public function teachers(): HasMany
+    public function teachers(): BelongsToMany
     {
-        return $this->hasMany(Teacher::class);
+        return $this->belongsToMany(Teacher::class);
     }
 }

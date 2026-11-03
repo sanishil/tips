@@ -585,6 +585,8 @@ document.addEventListener('show.bs.modal', (event) => {
         modal.querySelectorAll(`[name="${key}"]`).forEach((field) => {
             if (field.type === 'radio') {
                 field.checked = field.value === value;
+            } else if (field.type === 'checkbox') {
+                field.checked = [value].flat().includes(field.value);
             } else {
                 field.value = value;
             }

@@ -143,7 +143,7 @@
                                 <input id="f_name" name="f_name" class="form-control" list="teacher-list" autocomplete="off" required data-preview="f_name" data-autofill="f_designation">
                                 <datalist id="teacher-list" data-option-filter='{"dept":"f_dept"}'>
                                     @foreach ($teachers as $teacher)
-                                        <option value="{{ $teacher->name }}" data-value="{{ $teacher->designation->name }}" data-dept="{{ $teacher->department->dept_name }}"></option>
+                                        <option value="{{ $teacher->name }}" data-value="{{ $teacher->designationTitle() }}" data-dept="{{ $teacher->department->dept_name }}"></option>
                                     @endforeach
                                 </datalist>
                                 <x-field-error for="f_name">Enter or choose the teacher's name.</x-field-error>

@@ -14,7 +14,7 @@ use Illuminate\Http\Request;
 
 /**
  * Teachers, managed from both portals (/admin/teachers and /tech/teachers). Each belongs to a
- * department and has a designation, both picked from their own tables.
+ * department and holds one or more designations, all picked from their own tables.
  */
 class TeacherController extends Controller
 {
@@ -22,7 +22,7 @@ class TeacherController extends Controller
     {
         return view('portal.teachers', [
             'portal' => $request->user()->role->value,
-            'teachers' => Teacher::with(['department', 'designation'])->orderBy('name')->get(),
+            'teachers' => Teacher::with(['department', 'designations'])->orderBy('name')->get(),
             'departments' => Department::orderBy('dept_name')->get(['id', 'dept_name']),
             'designations' => Designation::orderBy('name')->get(['id', 'name']),
         ]);
@@ -30,14 +30,16 @@ class TeacherController extends Controller
 
     public function store(StoreTeacherRequest $request): RedirectResponse
     {
-        $teacher = Teacher::create($request->validated());
+        $teacher = Teacher::create($request->safe()->except('designation_ids'));
+        $teacher->designations()->sync($request->validated('designation_ids'));
 
         return $this->backToList($request, "“{$teacher->name}” added.");
     }
 
     public function update(UpdateTeacherRequest $request, Teacher $teacher): RedirectResponse
     {
-        $teacher->update($request->validated());
+        $teacher->update($request->safe()->except('designation_ids'));
+        $teacher->designations()->sync($request->validated('designation_ids'));
 
         return $this->backToList($request, "“{$teacher->name}” saved.");
     }

@@ -43,7 +43,7 @@ class StoreDesignationRequest extends FormRequest
         return [
             'name' => [
                 'required', 'string', 'min:2', 'max:60',
-                "regex:/^[\pL\pM][\pL\pM\s.&()'-]*$/u",
+                "regex:/^[\pL\pM][\pL\pM\s.&()\/'-]*$/u",
                 Rule::unique('designations', 'name')->ignore($this->route('designation')),
             ],
         ];
@@ -58,7 +58,7 @@ class StoreDesignationRequest extends FormRequest
             'name.required' => 'Enter a designation, e.g. Assistant Professor.',
             'name.min' => 'That designation is too short.',
             'name.max' => 'Keep the designation under 60 characters.',
-            'name.regex' => 'Use letters and spaces only (& . ( ) - are fine too).',
+            'name.regex' => 'Use letters and spaces only (& . ( ) / - are fine too).',
             'name.unique' => 'This designation is already listed.',
         ];
     }

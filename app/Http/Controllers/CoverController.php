@@ -31,7 +31,7 @@ class CoverController extends Controller
             'departments' => Department::orderBy('dept_name')->get(),
             'semesters' => range(1, Subject::MAX_SEMESTER),
             'subjects' => Subject::with('department')->orderBy('name')->get(),
-            'teachers' => Teacher::with(['department', 'designation'])->orderBy('name')->get(),
+            'teachers' => Teacher::with(['department', 'designations'])->orderBy('name')->get(),
             'designations' => Designation::orderBy('name')->pluck('name'),
             'assignmentTypes' => AssignmentType::pluck('name')->sort(SORT_NATURAL | SORT_FLAG_CASE)->values(),
             'options' => ['titles' => self::TITLES, 'sections' => self::SECTIONS],

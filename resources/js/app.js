@@ -645,25 +645,30 @@ function setBusy(button, busy) {
 
 /*
 | The cover page form saves the student's details (updated if the roll number is on file, added if not), then prints.
-| A field the server rejects is marked and nothing prints; if the save can't be reached, it still prints.
+| A field the server rejects is marked and nothing prints. While printing is free (data-price="0"), it still prints
+| if the save can't be reached. Once a price is set, the server answers with a Razorpay order instead: Checkout
+| opens, and the page prints only after the payment goes through.
 */
 async function saveThenPrint(form, button) {
     form.dataset.submitting = 'true';
     setBusy(button, true);
+
+    const finish = () => {
+        delete form.dataset.submitting;
+        setBusy(button, false);
+    };
 
     const response = await fetch(form.action, {
         method: 'POST',
         headers: { Accept: 'application/json' },
         body: new FormData(form),
     }).catch(() => null);
-
-    delete form.dataset.submitting;
-    setBusy(button, false);
+    const body = (await response?.json().catch(() => null)) ?? {};
 
     if (response?.status === 422) {
-        const { errors } = await response.json();
+        finish();
 
-        Object.entries(errors).forEach(([name, messages]) => {
+        Object.entries(body.errors ?? {}).forEach(([name, messages]) => {
             const input = form.elements[name];
             const feedback = input?.parentElement.querySelector('.invalid-feedback');
 
@@ -678,11 +683,100 @@ async function saveThenPrint(form, button) {
         return;
     }
 
-    if (!response?.ok) {
-        toast("Couldn't save your details, but you can still print.", 'error');
+    if (body.payment) {
+        const paid = await payWithRazorpay(body.payment);
+        finish();
+
+        if (!paid) {
+            return;
+        }
+    } else {
+        finish();
+
+        if (!response?.ok) {
+            if (Number(form.dataset.price) > 0) {
+                toast(body.message ?? "Couldn't reach the server, so the payment couldn't start. Please try again.", 'error');
+                return;
+            }
+
+            toast("Couldn't save your details, but you can still print.", 'error');
+        }
     }
 
     await printCoverPage();
+}
+
+/* Razorpay's Checkout script is only needed once a student pays, so it's loaded then. */
+function loadRazorpayCheckout() {
+    if (window.Razorpay) {
+        return Promise.resolve(true);
+    }
+
+    return new Promise((resolve) => {
+        const script = document.createElement('script');
+        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
+        script.onload = () => resolve(true);
+        script.onerror = () => resolve(false);
+        document.head.append(script);
+    });
+}
+
+/*
+| Open Checkout for the order and, once it's paid, send Razorpay's signed reply to the server. Resolves true when the
+| cover page should print. If the confirmation can't reach the server it still prints: the payment went through,
+| and Razorpay's webhook records it.
+*/
+async function payWithRazorpay(payment) {
+    if (!(await loadRazorpayCheckout())) {
+        toast("Couldn't open the payment window. Check your connection and try again.", 'error');
+        return false;
+    }
+
+    const result = await new Promise((resolve) => {
+        const checkout = new window.Razorpay({
+            key: payment.key,
+            order_id: payment.order_id,
+            amount: payment.amount,
+            currency: payment.currency,
+            name: payment.name,
+            description: payment.description,
+            prefill: payment.prefill,
+            theme: { color: '#22609f' },
+            handler: resolve,
+            modal: { ondismiss: () => resolve(null) },
+        });
+
+        /* A failed attempt leaves Checkout open so the student can try again; just say why it failed. */
+        checkout.on('payment.failed', ({ error }) => {
+            toast(error?.description ?? "That payment didn't go through. Try again or use another method.", 'error');
+        });
+
+        checkout.open();
+    });
+
+    if (!result) {
+        toast('Payment cancelled, so your cover page was not printed.', 'error');
+        return false;
+    }
+
+    const response = await fetch(payment.confirm_url, {
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
+        },
+        body: JSON.stringify(result),
+    }).catch(() => null);
+
+    if (response && !response.ok) {
+        const { message } = (await response.json().catch(() => null)) ?? {};
+        toast(message ?? `We couldn't confirm your payment. Contact the office with payment ID ${result.razorpay_payment_id}.`, 'error');
+        return false;
+    }
+
+    toast('Payment received. Thank you!');
+    return true;
 }
 
 document.addEventListener('submit', (event) => {

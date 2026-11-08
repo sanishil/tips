@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AssignmentType;
 use App\Models\Department;
 use App\Models\Designation;
+use App\Models\Setting;
 use App\Models\Subject;
 use App\Models\Teacher;
 use Illuminate\Contracts\View\View;
@@ -35,6 +36,7 @@ class CoverController extends Controller
             'designations' => Designation::orderBy('name')->pluck('name'),
             'assignmentTypes' => AssignmentType::pluck('name')->sort(SORT_NATURAL | SORT_FLAG_CASE)->values(),
             'options' => ['titles' => self::TITLES, 'sections' => self::SECTIONS],
+            'price' => Setting::coverPrice(),
         ]);
     }
 }

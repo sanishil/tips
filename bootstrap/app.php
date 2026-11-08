@@ -19,6 +19,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'password.changed' => EnsurePasswordIsChanged::class,
         ]);
 
+        $middleware->validateCsrfTokens(except: ['razorpay/webhook']);
+
         $middleware->redirectUsersTo(fn (Request $request): string => route($request->user()->role->dashboardRoute()));
     })
     ->withExceptions(function (Exceptions $exceptions): void {

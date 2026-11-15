@@ -307,8 +307,8 @@ document.addEventListener('change', autofill);
 /*
 | <select|datalist data-option-filter='{"dept":"std_dept"}'>: only offer options whose data-dept matches #std_dept.
 | An empty source normally offers everything; with data-option-filter-exact it only offers options whose attribute
-| is empty too (e.g. options with no department set). data-option-empty-disables disables the select while nothing
-| matches, so it's skipped by `required` and isn't submitted (e.g. a list with nothing to pick yet).
+| is empty too (e.g. departments without a sub-course). data-option-empty-disables disables the select while nothing
+| matches, so it's skipped by `required` and isn't submitted (e.g. sub-course for a course that has none).
 | The placeholder reads data-label, data-empty when nothing matches, or data-waiting while every source is empty.
 */
 document.querySelectorAll('select[data-option-filter], datalist[data-option-filter]').forEach((select) => {
@@ -357,10 +357,10 @@ document.querySelectorAll('select[data-option-filter], datalist[data-option-filt
 });
 
 /*
-| <input data-student-lookup="url/00000">: once a full university roll number is typed, fetch the saved student
-| (if any) and fill in their details. Department and semester go first, so the subject list is narrowed in time.
+| <input data-student-lookup="url/00000">: once a full college ID is typed, fetch the saved student (if any) and
+| fill in their details. Course goes before sub-course and department, so each list is narrowed in time.
 */
-const studentFields = ['title', 'name', 'std_dept', 'sem', 'section'];
+const studentFields = ['title', 'name', 'tu_roll', 'course', 'sub_course', 'std_dept', 'sem', 'section'];
 let studentLookup;
 
 document.addEventListener('input', (event) => {
@@ -377,10 +377,10 @@ document.addEventListener('input', (event) => {
     }
 
     studentLookup = setTimeout(async () => {
-        const tuRoll = field.value;
-        const response = await fetch(field.dataset.studentLookup.replace(/00000$/, encodeURIComponent(tuRoll)), { headers: { Accept: 'application/json' } }).catch(() => null);
+        const stdId = field.value;
+        const response = await fetch(field.dataset.studentLookup.replace(/00000$/, stdId), { headers: { Accept: 'application/json' } }).catch(() => null);
 
-        if (!response?.ok || field.value !== tuRoll) {
+        if (!response?.ok || field.value !== stdId) {
             return;
         }
 
@@ -585,8 +585,6 @@ document.addEventListener('show.bs.modal', (event) => {
         modal.querySelectorAll(`[name="${key}"]`).forEach((field) => {
             if (field.type === 'radio') {
                 field.checked = field.value === value;
-            } else if (field.type === 'checkbox') {
-                field.checked = [value].flat().includes(field.value);
             } else {
                 field.value = value;
             }
@@ -596,7 +594,7 @@ document.addEventListener('show.bs.modal', (event) => {
         });
     }
 
-    /* Filling a field doesn't fire `change`, so re-narrow dependent lists (e.g. departments) to the filled values. */
+    /* Filling a field doesn't fire `change`, so re-narrow dependent lists (e.g. sub-courses) to the filled values. */
     modal.querySelectorAll('[data-option-filter]').forEach((select) => select.dispatchEvent(new Event('refresh')));
 });
 
@@ -644,31 +642,26 @@ function setBusy(button, busy) {
 }
 
 /*
-| The cover page form saves the student's details (updated if the roll number is on file, added if not), then prints.
-| A field the server rejects is marked and nothing prints. While printing is free (data-price="0"), it still prints
-| if the save can't be reached. Once a price is set, the server answers with a Razorpay order instead: Checkout
-| opens, and the page prints only after the payment goes through.
+| The cover page form saves the student's details (updated if the college ID is on file, added if not), then prints.
+| A field the server rejects is marked and nothing prints; if the save can't be reached, it still prints.
 */
 async function saveThenPrint(form, button) {
     form.dataset.submitting = 'true';
     setBusy(button, true);
-
-    const finish = () => {
-        delete form.dataset.submitting;
-        setBusy(button, false);
-    };
 
     const response = await fetch(form.action, {
         method: 'POST',
         headers: { Accept: 'application/json' },
         body: new FormData(form),
     }).catch(() => null);
-    const body = (await response?.json().catch(() => null)) ?? {};
+
+    delete form.dataset.submitting;
+    setBusy(button, false);
 
     if (response?.status === 422) {
-        finish();
+        const { errors } = await response.json();
 
-        Object.entries(body.errors ?? {}).forEach(([name, messages]) => {
+        Object.entries(errors).forEach(([name, messages]) => {
             const input = form.elements[name];
             const feedback = input?.parentElement.querySelector('.invalid-feedback');
 
@@ -683,100 +676,11 @@ async function saveThenPrint(form, button) {
         return;
     }
 
-    if (body.payment) {
-        const paid = await payWithRazorpay(body.payment);
-        finish();
-
-        if (!paid) {
-            return;
-        }
-    } else {
-        finish();
-
-        if (!response?.ok) {
-            if (Number(form.dataset.price) > 0) {
-                toast(body.message ?? "Couldn't reach the server, so the payment couldn't start. Please try again.", 'error');
-                return;
-            }
-
-            toast("Couldn't save your details, but you can still print.", 'error');
-        }
+    if (!response?.ok) {
+        toast("Couldn't save your details, but you can still print.", 'error');
     }
 
     await printCoverPage();
-}
-
-/* Razorpay's Checkout script is only needed once a student pays, so it's loaded then. */
-function loadRazorpayCheckout() {
-    if (window.Razorpay) {
-        return Promise.resolve(true);
-    }
-
-    return new Promise((resolve) => {
-        const script = document.createElement('script');
-        script.src = 'https://checkout.razorpay.com/v1/checkout.js';
-        script.onload = () => resolve(true);
-        script.onerror = () => resolve(false);
-        document.head.append(script);
-    });
-}
-
-/*
-| Open Checkout for the order and, once it's paid, send Razorpay's signed reply to the server. Resolves true when the
-| cover page should print. If the confirmation can't reach the server it still prints: the payment went through,
-| and Razorpay's webhook records it.
-*/
-async function payWithRazorpay(payment) {
-    if (!(await loadRazorpayCheckout())) {
-        toast("Couldn't open the payment window. Check your connection and try again.", 'error');
-        return false;
-    }
-
-    const result = await new Promise((resolve) => {
-        const checkout = new window.Razorpay({
-            key: payment.key,
-            order_id: payment.order_id,
-            amount: payment.amount,
-            currency: payment.currency,
-            name: payment.name,
-            description: payment.description,
-            prefill: payment.prefill,
-            theme: { color: '#22609f' },
-            handler: resolve,
-            modal: { ondismiss: () => resolve(null) },
-        });
-
-        /* A failed attempt leaves Checkout open so the student can try again; just say why it failed. */
-        checkout.on('payment.failed', ({ error }) => {
-            toast(error?.description ?? "That payment didn't go through. Try again or use another method.", 'error');
-        });
-
-        checkout.open();
-    });
-
-    if (!result) {
-        toast('Payment cancelled, so your cover page was not printed.', 'error');
-        return false;
-    }
-
-    const response = await fetch(payment.confirm_url, {
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.content ?? '',
-        },
-        body: JSON.stringify(result),
-    }).catch(() => null);
-
-    if (response && !response.ok) {
-        const { message } = (await response.json().catch(() => null)) ?? {};
-        toast(message ?? `We couldn't confirm your payment. Contact the office with payment ID ${result.razorpay_payment_id}.`, 'error');
-        return false;
-    }
-
-    toast('Payment received. Thank you!');
-    return true;
 }
 
 document.addEventListener('submit', (event) => {

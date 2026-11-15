@@ -5,15 +5,18 @@ namespace App\Http\Controllers\Portal;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreSubjectRequest;
 use App\Http\Requests\UpdateSubjectRequest;
+use App\Models\Course;
 use App\Models\Department;
+use App\Models\SubCourse;
 use App\Models\Subject;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 /**
- * Subjects, managed from both portals (/admin/subjects and /tech/subjects). Each is taught by a
- * department in one semester.
+ * Subjects, managed from both portals (/admin/subjects and /tech/subjects). Each is taught in one
+ * semester of a course (and its sub-course, if the course has any) and run by a department that
+ * offers that course and sub-course. The form narrows each list by the choices before it.
  */
 class SubjectController extends Controller
 {
@@ -21,8 +24,10 @@ class SubjectController extends Controller
     {
         return view('portal.subjects', [
             'portal' => $request->user()->role->value,
-            'subjects' => Subject::with('department')->orderBy('code')->get(),
-            'departments' => Department::orderBy('dept_name')->get(['id', 'dept_name']),
+            'subjects' => Subject::with(['department', 'course', 'subCourse'])->orderBy('code')->get(),
+            'courses' => Course::orderBy('name')->get(['id', 'name']),
+            'subCourses' => SubCourse::orderBy('name')->get(['id', 'course_id', 'name']),
+            'departments' => Department::whereNotNull('course_id')->orderBy('dept_name')->get(['id', 'dept_name', 'course_id', 'sub_course_id']),
         ]);
     }
 

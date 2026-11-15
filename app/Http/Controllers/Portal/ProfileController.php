@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Portal;
 
 use App\Http\Controllers\Controller;
+use App\Support\JwtGuard;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -78,7 +80,7 @@ class ProfileController extends Controller
             'remember_token' => Str::random(60),
         ])->save();
 
-        $user->signOutEverywhere(except: $request->session()->getId());
+        $user->signOutEverywhere(except: $this->currentTokenId());
 
         return $this->backToProfile($request, 'Password changed. You\'ve been signed out on other devices.');
     }
@@ -120,6 +122,16 @@ class ProfileController extends Controller
         }
 
         return $this->backToProfile($request, 'Photo removed.');
+    }
+
+    /**
+     * The jti of the JWT this browser signed in with, so a password change keeps it signed in.
+     */
+    private function currentTokenId(): ?string
+    {
+        $guard = Auth::guard();
+
+        return $guard instanceof JwtGuard ? $guard->tokenId() : null;
     }
 
     private function backToProfile(Request $request, string $message): RedirectResponse

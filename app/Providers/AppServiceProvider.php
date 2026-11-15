@@ -3,9 +3,13 @@
 namespace App\Providers;
 
 use App\Support\EmailOtp;
+use App\Support\Jwt;
+use App\Support\JwtGuard;
 use Illuminate\Cache\RateLimiting\Limit;
+use Illuminate\Contracts\Foundation\Application;
 use Illuminate\Http\Request;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Str;
@@ -18,7 +22,11 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        /* A key derived from APP_KEY, so the JWT signing key is never the raw app key. */
+        $this->app->singleton(Jwt::class, fn (Application $app): Jwt => new Jwt(
+            key: hash_hmac('sha256', 'jwt-auth', (string) $app['config']->get('app.key'), true),
+            issuer: (string) $app['config']->get('app.url'),
+        ));
     }
 
     /**
@@ -28,7 +36,28 @@ class AppServiceProvider extends ServiceProvider
     {
         Paginator::useBootstrapFive();
 
+        $this->configureJwtGuard();
         $this->configureRateLimiting();
+    }
+
+    /**
+     * The "jwt" auth driver used by the web guard (see config/auth.php).
+     */
+    private function configureJwtGuard(): void
+    {
+        Auth::extend('jwt', function (Application $app, string $name, array $config): JwtGuard {
+            $guard = new JwtGuard(
+                provider: Auth::createUserProvider($config['provider'] ?? null),
+                request: $app['request'],
+                jwt: $app->make(Jwt::class),
+                cookieName: (string) config('auth.jwt.cookie'),
+                ttlMinutes: (int) config('auth.jwt.ttl'),
+            );
+
+            $app->refresh('request', $guard, 'setRequest');
+
+            return $guard;
+        });
     }
 
     /**

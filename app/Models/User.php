@@ -9,9 +9,9 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Attributes\Hidden;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 #[Fillable(['name', 'email', 'password', 'role', 'must_change_password', 'email_verified_at'])]
@@ -38,19 +38,24 @@ class User extends Authenticatable
     }
 
     /**
-     * Ends every signed-in session of this account (sessions are kept in the database), e.g. after
-     * its password changes or it's deactivated. `$except` keeps one session, such as the current one.
+     * Ends every signed-in browser of this account by deleting its JWT rows, e.g. after its password
+     * changes or it's deactivated. `$except` keeps one token (by jti), such as the current one.
      */
     public function signOutEverywhere(?string $except = null): void
     {
-        if (config('session.driver') !== 'database') {
-            return;
-        }
-
-        DB::table(config('session.table', 'sessions'))
-            ->where('user_id', $this->id)
-            ->when($except, fn ($query) => $query->where('id', '!=', $except))
+        $this->authTokens()
+            ->when($except, fn ($query) => $query->where('jti', '!=', $except))
             ->delete();
+    }
+
+    /**
+     * The browsers this account is signed in on.
+     *
+     * @return HasMany<AuthToken, $this>
+     */
+    public function authTokens(): HasMany
+    {
+        return $this->hasMany(AuthToken::class);
     }
 
     /**

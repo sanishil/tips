@@ -19,6 +19,9 @@ return Application::configure(basePath: dirname(__DIR__))
             'password.changed' => EnsurePasswordIsChanged::class,
         ]);
 
+        /* The sign-in cookie is a signed JWT, so it is sent as-is rather than encrypted. */
+        $middleware->encryptCookies(except: [env('JWT_COOKIE', 'tips_token')]);
+
         $middleware->redirectUsersTo(fn (Request $request): string => route($request->user()->role->dashboardRoute()));
     })
     ->withExceptions(function (Exceptions $exceptions): void {

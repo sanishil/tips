@@ -39,7 +39,7 @@ return [
 
     'guards' => [
         'web' => [
-            'driver' => 'session',
+            'driver' => 'jwt',
             'provider' => 'users',
         ],
     ],
@@ -113,5 +113,21 @@ return [
     */
 
     'password_timeout' => env('AUTH_PASSWORD_TIMEOUT', 10800),
+
+    /*
+    |--------------------------------------------------------------------------
+    | JWT Sign-In Cookie
+    |--------------------------------------------------------------------------
+    |
+    | The "web" guard signs users in with an HS256 JWT kept in an httpOnly
+    | cookie. "ttl" is how many minutes a token lasts without activity; it
+    | is re-issued once half of that has passed, so active users stay in.
+    |
+    */
+
+    'jwt' => [
+        'cookie' => env('JWT_COOKIE', 'tips_token'),
+        'ttl' => (int) env('JWT_TTL', 5),
+    ],
 
 ];

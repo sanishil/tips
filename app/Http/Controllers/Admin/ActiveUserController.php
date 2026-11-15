@@ -3,17 +3,17 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuthToken;
 use App\Models\User;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 /**
- * Admin → Signed in now: other accounts with a session active in the last few minutes, read from the
- * sessions table, and a way to sign one out.
+ * Admin → Signed in now: other accounts whose sign-in token was used in the last few minutes, read from the
+ * auth_tokens table, and a way to sign one out.
  */
 class ActiveUserController extends Controller
 {
@@ -24,18 +24,16 @@ class ActiveUserController extends Controller
 
     public function index(Request $request): View
     {
-        $lastActivity = config('session.driver') === 'database'
-            ? DB::table(config('session.table', 'sessions'))
-                ->whereNotNull('user_id')
-                ->where('user_id', '!=', $request->user()->id)
-                ->where('last_activity', '>=', now()->subMinutes(self::ACTIVE_MINUTES)->getTimestamp())
-                ->selectRaw('user_id, max(last_activity) as last_activity')
-                ->groupBy('user_id')
-                ->pluck('last_activity', 'user_id')
-            : collect();
+        $lastActivity = AuthToken::query()
+            ->where('user_id', '!=', $request->user()->id)
+            ->where('expires_at', '>', now())
+            ->where('last_used_at', '>=', now()->subMinutes(self::ACTIVE_MINUTES))
+            ->selectRaw('user_id, max(last_used_at) as last_used_at')
+            ->groupBy('user_id')
+            ->pluck('last_used_at', 'user_id');
 
         $users = User::whereIn('id', $lastActivity->keys())->get()
-            ->each(fn (User $user) => $user->setAttribute('last_active_at', Carbon::createFromTimestamp($lastActivity[$user->id])))
+            ->each(fn (User $user) => $user->setAttribute('last_active_at', Carbon::parse($lastActivity[$user->id])))
             ->sortByDesc('last_active_at')
             ->values();
 

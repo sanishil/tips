@@ -14,13 +14,15 @@ return new class extends Migration
         Schema::create('subjects', function (Blueprint $table) {
             $table->id();
             $table->foreignId('department_id')->constrained()->restrictOnDelete();
-            $table->foreignId('sub_course_id')->constrained()->restrictOnDelete();
+            $table->foreignId('course_id')->constrained()->restrictOnDelete();
+            $table->foreignId('sub_course_id')->nullable()->constrained()->restrictOnDelete();
             $table->unsignedTinyInteger('semester');
             $table->string('name', 120);
             $table->string('code', 20)->unique();
             $table->timestamps();
 
-            $table->unique(['sub_course_id', 'semester', 'name']);
+            $table->unique(['course_id', 'sub_course_id', 'semester', 'name']);
+            $table->index('sub_course_id');
         });
     }
 

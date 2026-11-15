@@ -1,0 +1,35 @@
+# For hosts where the domain points at the project root instead of /public.
+# Every request is passed into /public (public/.htaccess then hands it to index.php),
+# and the app's private files and folders can't be opened from the browser.
+
+Options -Indexes
+
+# Never serve dotfiles (.env, .git, ...) or project files, even without mod_rewrite.
+<FilesMatch "^\.|^(artisan|composer\.(json|lock)|package(-lock)?\.json|phpunit\.xml|vite\.config\.js|.*\.(md|sql|log|sh|yml|yaml))$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Keep the Authorization header (some hosts drop it).
+    RewriteCond %{HTTP:Authorization} .
+    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+
+    # Let SSL certificate checks (Let's Encrypt) through.
+    RewriteRule ^\.well-known/ - [L]
+
+    # Block dotfiles and the app's private folders.
+    RewriteRule (^|/)\. - [F,L]
+    RewriteRule ^(app|bootstrap|config|database|lang|node_modules|resources|routes|storage|tests|vendor)(/|$) - [F,L,NC]
+
+    # Send everything else into /public.
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

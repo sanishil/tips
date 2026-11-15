@@ -69,15 +69,15 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Cache Clear Key
+    | Maintenance Key
     |--------------------------------------------------------------------------
     |
-    | Secret for the /clear-cache?key=... URL. Leave it empty to turn the URL
-    | off (it then answers 404).
+    | Secret for the /maintenance?key=...&run=... URL that runs setup commands
+    | on hosts without SSH. Leave it empty to turn the URL off (404).
     |
     */
 
-    'cache_clear_key' => env('CACHE_CLEAR_KEY'),
+    'maintenance_key' => env('MAINTENANCE_KEY'),
 
     /*
     |--------------------------------------------------------------------------

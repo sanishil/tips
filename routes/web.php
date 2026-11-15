@@ -6,8 +6,8 @@ use App\Http\Controllers\Auth\ChangePasswordController;
 use App\Http\Controllers\Auth\ForgotPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\ClearCacheController;
 use App\Http\Controllers\CoverController;
+use App\Http\Controllers\MaintenanceController;
 use App\Http\Controllers\Portal\AssignmentTypeController;
 use App\Http\Controllers\Portal\CourseController;
 use App\Http\Controllers\Portal\DashboardController;
@@ -18,15 +18,23 @@ use App\Http\Controllers\Portal\SubCourseController;
 use App\Http\Controllers\Portal\SubjectController;
 use App\Http\Controllers\Portal\TeacherController;
 use App\Http\Controllers\StudentController;
+use Illuminate\Foundation\Http\Middleware\PreventRequestForgery;
+use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\Facades\Route;
+use Illuminate\View\Middleware\ShareErrorsFromSession;
 
 /*
 | Sign-in, sign-up, password reset and user accounts are real. The portal pages without a
 | data source yet get empty lists and show their "nothing yet" states.
 */
 
-/* Cache clearing for hosts without SSH; needs ?key=CACHE_CLEAR_KEY (see ClearCacheController). */
-Route::get('/clear-cache', ClearCacheController::class)->middleware('throttle:5,1')->name('clear-cache');
+/*
+| Setup commands for hosts without SSH; needs ?key=MAINTENANCE_KEY (see MaintenanceController).
+| No session or rate limiter here: both use database tables, which may not exist yet.
+*/
+Route::get('/maintenance', MaintenanceController::class)
+    ->withoutMiddleware([StartSession::class, ShareErrorsFromSession::class, PreventRequestForgery::class])
+    ->name('maintenance');
 
 Route::get('/', CoverController::class)->middleware('password.changed')->name('cover.form');
 Route::middleware(['password.changed', 'throttle:30,1'])->group(function () {
